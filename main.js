@@ -15,6 +15,12 @@
     geocoder,
     container,
     background;
+    
+  function log(){
+    if (window.console && typeof window.console.log == "function"){
+      console.log.apply(console, arguments);
+    }
+  }
   
   function initialize(){
     load_jquery();
@@ -60,7 +66,7 @@
     
   function draw_panel(html){
     
-    console.log("magic cookie", magic_cookie);
+    log("magic cookie", magic_cookie, 1234);
     
     spinner = $("<div class='spinner'/>");
     
