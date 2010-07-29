@@ -16,14 +16,15 @@
   -moz-border-radius:4px 4px 4px 4px;
 }
 
-#flickr_bookmarklet .breadcrumb,
+#flickr_bookmarklet .foot,
 #flickr_bookmarklet .mode-title {
   display: none;
 }
 
 #flickr_bookmarklet .map {
   width: 1000px;
-  height: 420px;
+  height: 400px;
+  margin: 0 0 1em 0;
 }
 
 #flickr_bookmarklet .close {
@@ -52,10 +53,19 @@
 }
 
 #flickr_bookmarklet form input {
-  margin: 0 0.5em 1em 0;
+  margin: 0 0.5em 1em 0.5em;
   width: 20em;
 }
 
 #flickr_bookmarklet .Butt {
   margin-right: 5px;
+}
+
+#flickr_bookmarklet div.spinner {
+  background:url("http://l.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 50% 50% #FFFFFF;
+  height:20px;
+  position:absolute;
+  right:34px;
+  top:8px;
+  width:24px;
 }

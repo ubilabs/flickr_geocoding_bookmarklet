@@ -11,6 +11,7 @@
     map,
     marker,
     input,
+    spinner,
     geocoder,
     container,
     background;
@@ -52,6 +53,7 @@
         init_map();
         init_marker();
         init_form();
+        spinner.hide();
       });
     });
   }
@@ -59,6 +61,8 @@
   function draw_panel(html){
     
     console.log("magic cookie", magic_cookie);
+    
+    spinner = $("<div class='spinner'/>");
     
     background = $("<div>", {
       id: 'flickr_bookmarklet_background',
@@ -69,9 +73,10 @@
     
     container = $("<div>", {id: 'flickr_bookmarklet'});
     container.html(html);
-    
     container.find(".close").click(hide);
-    
+    container.find(".breadcrumb h3").html("Choose your location");
+    container.append(spinner);
+
     $("body").append(container).append(background);
   }
   
@@ -82,6 +87,10 @@
     input = form.find("input");
     button = form.find("button");
     address = get_cookie("address") || "Enter place name or address.";
+    
+    form.prepend($("<label>", {
+      "for": input.attr("id")      
+    }).html("Search:"));
     
     form.submit(function(){
       address = input.val();
