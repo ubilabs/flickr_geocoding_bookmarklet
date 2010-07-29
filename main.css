@@ -50,3 +50,12 @@
   z-index:20002;
   cursor:pointer;
 }
+
+#flickr_bookmarklet form input {
+  margin: 0 0.5em 1em 0;
+  width: 20em;
+}
+
+#flickr_bookmarklet .Butt {
+  margin-right: 5px;
+}
