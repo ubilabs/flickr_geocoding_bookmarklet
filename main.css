@@ -1,0 +1,52 @@
+#flickr_bookmarklet {
+  font-size: 12px;
+  position: fixed;
+  text-align: left;
+  width: 1000px;
+  height: 500px;
+  z-index: 20003;
+  display: block;
+  left: 50%;
+  margin-left: -505px;
+  margin-top: -255px;
+  top: 50%;
+  background-color:#FFFFFF;
+  padding: 10px;  
+  -moz-box-shadow:0 0 8px rgba(0, 0, 0, 0.5);
+  -moz-border-radius:4px 4px 4px 4px;
+}
+
+#flickr_bookmarklet .breadcrumb,
+#flickr_bookmarklet .mode-title {
+  display: none;
+}
+
+#flickr_bookmarklet .map {
+  width: 1000px;
+  height: 420px;
+}
+
+#flickr_bookmarklet .close {
+  background-image:url("http://l.yimg.com/g/images/close_x_sprite.png");
+  border:0 none;
+  cursor:pointer;
+  height:16px;
+  margin:0;
+  padding:0;
+  position:absolute;
+  right:10px;
+  top:10px;
+  width:16px;
+}
+
+#flickr_bookmarklet_background {
+  background-color:#000000;
+  height:100%;
+  left:0;
+  opacity:0.35;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:20002;
+  cursor:pointer;
+}
