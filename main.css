@@ -53,6 +53,7 @@
   width:100%;
   z-index:20002;
   cursor:pointer;
+  filter: alpha(opacity=35);
 }
 
 #flickr_bookmarklet form input {

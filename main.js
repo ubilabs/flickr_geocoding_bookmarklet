@@ -1,10 +1,14 @@
 (function(window, undefined){
   
   var $,
-    BASE_URL = "http://localhost:8000/",
+    BASE_URL = "http://192.168.1.208:8000/",
     JQUERY_SRC = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
     GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&callback=?",
     CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
+    API_KEY = "995363218486416e071f63716270f2b8",
+    API_SECRET = "b4564eec14c76652",
+    AUTH_TOKEN = "",
+    AUTH_HASH = "56c4fe04a1435245b80bc3d2866777ff",    
     STYLE_URL = BASE_URL + "main.css",
     MARKER_SRC = BASE_URL + "/arrow.png",
     PANEL_SRC = "/photo_geopanel_fragment.gne",
@@ -39,6 +43,7 @@
   function reload(){
     show();
     $input.select();
+    google.maps.event.trigger(map, "resize");
   }
   
   function load_jquery(){
@@ -57,28 +62,101 @@
     $("head").append(style);
   }
   
+  function get_secrets(){
+    
+    var script, match;
+    
+    magic_cookie = $("input[name=magic_cookie]").val();
+  
+    script = $("script").not("[src]").last().html();
+    
+    match = script.match(/auth_hash: '([A-Za-z0-9]+)'/);
+    
+    alert(match && match[1]);
+    
+    /*  
+      http://code.google.com/p/patr/source/browse/trunk/flickrpage.js
+      http://www.flickr.com/services/rest/?format=json
+        clientType=yui-3-flickrapi-module
+        api_key=995363218486416e071f63716270f2b8
+        auth_hash=3494b85736b63e6f1c44cbf7ea147440
+        auth_token=
+        secret=b4564eec14c76652
+        lat=53.536813370674
+        lon=9.9630017278832
+        accuracy=13
+        context=last
+        method=flickr.people.geo.setLocation
+        jsoncallback=YUI.flickrAPITransactions.flapicb4
+        cachebust=1280495962408
+
+
+      http://www.flickr.com/services/rest/?format=json
+        clientType=yui-3-flickrapi-module
+        api_key=995363218486416e071f63716270f2b8
+        auth_hash=3494b85736b63e6f1c44cbf7ea147440
+        auth_token=
+        secret=b4564eec14c76652
+        is_public=1
+        is_contact=1
+        is_friend=1
+        is_family=1
+        photo_id=4811794241
+        method=flickr.photos.geo.setPerms
+        jsoncallback=YUI.flickrAPITransactions.flapicb6
+        cachebust=1280495963647
+
+
+
+      ftxt.match(/api_key: '([A-Za-z0-9]+)'/);
+      ftxt.match(/auth_hash: '([A-Za-z0-9]+)'/);
+      ftxt.match(/nsid: '(.*)'/g);
+      ftxt.match(/photos_url: '(.*)'/g);
+
+
+    */
+    
+    
+    /* 
+    * REGEX to match braces
+    * \(\{(?:(?!\}).)*\}\);
+    * 
+    * photo_conf = script.match(/Y\.photo(\(\{[^\)]*\));/);
+    * api_conf = script.match(/flickrAPI\:([^(\})]*\})/);
+    *
+    * 
+    * 
+    * console.log(api_conf && api_conf[1], photo_conf && photo_conf[1]);
+    * console.log(eval(photo_conf[1]));
+    * console.log(eval("(" + api_conf[1] + ")"));
+    * 
+    */
+    
+    
+  }
+  
   function jquery_loaded(){
     
     $ = jQuery;
     $.noConflict();
     load_styles();
-    magic_cookie = $("input[name=magic_cookie]").val();
-    $.getJSON(GMAPS_API, function(){
-      $.get(PANEL_SRC, function(html){
-        draw_panel(html);
+    get_secrets();
+    
+    $.get(PANEL_SRC, function(html){
+      draw_panel(html);
+      $.getJSON(GMAPS_API, function(){
         init_map();
         init_marker();
-        init_form();
-        $spinner.hide();
       });
+
+      init_form();
+      $spinner.hide();
     });
   }
     
   function draw_panel(html){
     
     log("magic cookie", magic_cookie, 1234);
-    
-    
     
     $background = $("<div>", {
       id: 'flickr_bookmarklet_background',
@@ -90,7 +168,11 @@
     $container = $("<div>", {id: 'flickr_bookmarklet'});
     $container.html(html);
     $container.find(".close").click(hide);
-    $container.find(".breadcrumb h3").html("Choose your location");
+    $container.find(".breadcrumb h3").html(
+      'Choose your location for "'+
+      $("meta[name='title']").attr("content") +
+      '":'
+    );
 
 
     $("body").append($container).append($background);
@@ -114,18 +196,18 @@
       return false;
     });
     
-    $input.val(address).select();
-    
     $spinner = $("<div class='spinner'/>");
     $save = $("<button class='DisabledButt'>SAVE LOCATION</button>");
     $cancel = $("<button class='CancelButt'>CANCEL</button>");
     $submit_form = $("<div>", {id: "submit_form"});
     $container.append($save).append($cancel).append($spinner).append($submit_form);
+    
+    $save.click(save_postion);
     $cancel.click(cancel);
   }
   
   function get_initial_position(){
-    var src, match, last_location, parts;
+    var src, match, last_location, parts = [];
     
     src = $("#photo-story-map img:last").attr("src") || "";
     match = src.match(/clat=([\d.-]*)&clon=([\d.-]*)&zoom=([\d.-]*)/);
@@ -175,6 +257,8 @@
     });
     
     geocoder = new google.maps.Geocoder();
+    
+    $input.val(address).select();
   }
   
   function init_marker(){
@@ -263,10 +347,15 @@
   }
   
   function check_position(){
-    var data = {
+    
+    var data, edit_mode;
+    
+    edit_mode = initial_position ? "edit" : "add";
+    
+    data = {
       accuracy: map.getZoom(),
       center_map: true,
-      edit_mode: "0,edit",
+      edit_mode: "0," + edit_mode,
       latitude: lat,
       longitude: lng,
       magic_cookie: magic_cookie,
@@ -280,15 +369,36 @@
     
     $.post(CONFIRM_URL, data, function(html){
      
-     $submit_form.html(html);
-     
-     $submit_form.find("fieldset div div").html("Location:");
-     $submit_form.find("[name=save_perm_viewgeo]").parent().parent().hide();
-     
-     $spinner.hide();     
-     $save.removeClass("DisabledButt").addClass("Butt");
+      $submit_form.html(html);
+      
+      $submit_form.find("fieldset div div").html("Location:");
+      $submit_form.find("[name=save_perm_viewgeo]").parent().parent().hide();
+      
+      $spinner.hide();     
+      $save.removeClass("DisabledButt").addClass("Butt");
     });
   }
+  
+  function save_postion(){
+    
+    if ($save.hasClass("DisabledButt")){ return; }
+    
+    var data = {}, form; 
+    
+    form = $submit_form.find(".flickrmap_locationconfirm");
+    
+    $.each(form.serializeArray(), function(){
+      data[this.name] = this.value;
+    });
+    
+    $.post(CONFIRM_URL, data, function(html){
+     
+      console.log(arguments);
+      $spinner.hide();     
+      $save.addClass("DisabledButt").removeClass("Butt");
+    }, "json");
+  }
+
   
   function find(address){
     var options = {
