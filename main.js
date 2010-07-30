@@ -9,6 +9,11 @@
     PANEL_SRC = "/photo_geopanel_fragment.gne",
     magic_cookie,
     map,
+    lat, 
+    lng, 
+    zoom,
+    map_type,
+    has_location,
     marker,
     input,
     spinner,
@@ -114,9 +119,18 @@
     cancel.click(hide);    
   }
   
-  function init_map(){
+  function get_initial_position(){
+    var src, match, last_location, parts;
     
-    var parts = [], last_location, lat, lng, zoom, center, map_type;
+    src = $("#photo-story-map img:last").attr("src") || "";
+    match = src.match(/clat=([\d.-]*)&clon=([\d.-]*)&zoom=([\d.-]*)/);
+    
+    if (match){
+      lat = parseFloat(match[1], 10);
+      lng = parseFloat(match[2], 10);
+      zoom = parseFloat(match[3], 10);
+      has_location = true;
+    }
     
     last_location = get_cookie("location");
     
@@ -124,10 +138,16 @@
       parts = last_location.split(",");
     } 
     
-    lat = parseFloat(parts[0], 10) || 30;
-    lng = parseFloat(parts[1], 10) || 0;
-    zoom = parseFloat(parts[2], 10) || 2;
+    lat = lat || parseFloat(parts[0], 10) || 30;
+    lng = lng || parseFloat(parts[1], 10) || 0;
+    zoom = zoom || parseFloat(parts[2], 10) || 2;
+    
     map_type = parts[3] || google.maps.MapTypeId.ROADMAP;
+  }
+  
+  function init_map(){
+    
+    get_initial_position();
     
     map = new google.maps.Map(container.find(".map")[0], {
       zoom: zoom,
@@ -160,7 +180,7 @@
       map: map,
       title: "Drag me!",
       draggable: true,
-      visible: false,
+      visible: !!has_location,
       icon: icon,
       position: map.getCenter(),
       shadow: shadow
