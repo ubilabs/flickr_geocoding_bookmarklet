@@ -57,6 +57,7 @@
   width: 20em;
 }
 
+#flickr_bookmarklet .DisabledButt,
 #flickr_bookmarklet .Butt {
   margin-right: 5px;
 }

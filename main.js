@@ -13,14 +13,16 @@
     lng, 
     zoom,
     map_type,
-    has_location,
+    initial_position,
     address,
     marker,
     geocoder,
     $input,
     $spinner,
     $container,
-    $background;
+    $background,
+    $save, 
+    $cancel;
     
   function log(){
     if (window.console && typeof window.console.log == "function"){
@@ -93,7 +95,7 @@
   }
   
   function init_form(){
-    var $save, $cancel, $form, $button;
+    var $form, $button;
 
     $form = $container.find("form[name=location_search]");
     $input = $form.find("input");
@@ -112,11 +114,11 @@
     
     $input.val(address).select();
     
-    $save = $("<button class='Butt'>SAVE LOCATION</button>");
+    $save = $("<button class='DisabledButt'>SAVE LOCATION</button>");
     $cancel = $("<button class='CancelButt'>CANCEL</button>");
     
     $container.append($save).append($cancel);
-    $cancel.click(hide);
+    $cancel.click(cancel);
   }
   
   function get_initial_position(){
@@ -126,10 +128,11 @@
     match = src.match(/clat=([\d.-]*)&clon=([\d.-]*)&zoom=([\d.-]*)/);
     
     if (match){
-      lat = parseFloat(match[1], 10);
-      lng = parseFloat(match[2], 10);
-      zoom = parseFloat(match[3], 10);
-      has_location = true;
+      initial_position = {
+        lat: parseFloat(match[1], 10),
+        lng: parseFloat(match[2], 10),
+        zoom: parseFloat(match[3], 10)
+      };
     }
     
     last_location = get_cookie("location");
@@ -138,9 +141,15 @@
       parts = last_location.split(",");
     } 
     
-    lat = lat || parseFloat(parts[0], 10) || 30;
-    lng = lng || parseFloat(parts[1], 10) || 0;
-    zoom = zoom || parseFloat(parts[2], 10) || 2;
+    if (initial_position){
+      lat = initial_position.lat;
+      lng = initial_position.lng ;
+      zoom = initial_position.zoom;
+    } else {
+      lat = parseFloat(parts[0], 10) || 30;
+      lng = parseFloat(parts[1], 10) || 0;
+      zoom = parseFloat(parts[2], 10) || 2;
+    }
     
     map_type = parts[3] || google.maps.MapTypeId.ROADMAP;
     
@@ -184,7 +193,7 @@
       map: map,
       title: "Drag me!",
       draggable: true,
-      visible: !!has_location,
+      visible: !!initial_position,
       icon: icon,
       position: map.getCenter(),
       shadow: shadow
@@ -214,6 +223,10 @@
       }
     });
     
+    google.maps.event.addListener(marker, 'dragend', function(){
+      position(marker.getPosition());
+    });
+    
     google.maps.event.addListener(map, 'click', function(event) {
       if (event.latLng){
         hide_info();
@@ -221,7 +234,6 @@
       }
     });
   }
-  
   
   function position(latLng){
     
@@ -238,6 +250,8 @@
     ];
     
     set_cookie("location", info.join(","));
+    
+    $save.removeClass("DisabledButt").addClass("Butt");
   }
   
   function find(address){
@@ -275,6 +289,26 @@
     match = document.cookie.match(regex);
     
     return match && unescape(match[1]);
+  }
+
+  function cancel(){
+    
+    var latLng;
+    
+    if (initial_position){
+      latLng = new google.maps.LatLng(
+        initial_position.lat, 
+        initial_position.lng
+      );
+      position(latLng);
+      map.setCenter(latLng);
+      map.setZoom(initial_position.zoom);      
+    } else {
+      marker.setVisible(false);
+    }
+    
+    $save.removeClass("Butt").addClass("DisabledButt");
+    hide();  
   }
 
   function show(){
