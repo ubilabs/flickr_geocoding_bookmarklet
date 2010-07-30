@@ -14,12 +14,13 @@
     zoom,
     map_type,
     has_location,
+    address,
     marker,
-    input,
-    spinner,
     geocoder,
-    container,
-    background;
+    $input,
+    $spinner,
+    $container,
+    $background;
     
   function log(){
     if (window.console && typeof window.console.log == "function"){
@@ -33,7 +34,7 @@
   
   function reload(){
     show();
-    input.select();
+    $input.select();
   }
   
   function load_jquery(){
@@ -64,7 +65,7 @@
         init_map();
         init_marker();
         init_form();
-        spinner.hide();
+        $spinner.hide();
       });
     });
   }
@@ -73,50 +74,49 @@
     
     log("magic cookie", magic_cookie, 1234);
     
-    spinner = $("<div class='spinner'/>");
+    $spinner = $("<div class='spinner'/>");
     
-    background = $("<div>", {
+    $background = $("<div>", {
       id: 'flickr_bookmarklet_background',
       title: "Close"
     });
     
-    background.click(hide);
+    $background.click(hide);
     
-    container = $("<div>", {id: 'flickr_bookmarklet'});
-    container.html(html);
-    container.find(".close").click(hide);
-    container.find(".breadcrumb h3").html("Choose your location");
-    container.append(spinner);
+    $container = $("<div>", {id: 'flickr_bookmarklet'});
+    $container.html(html);
+    $container.find(".close").click(hide);
+    $container.find(".breadcrumb h3").html("Choose your location");
+    $container.append($spinner);
 
-    $("body").append(container).append(background);
+    $("body").append($container).append($background);
   }
   
   function init_form(){
-    var save, cancel, form, button, location;
+    var $save, $cancel, $form, $button;
 
-    form = container.find("form[name=location_search]");
-    input = form.find("input");
-    button = form.find("button");
-    address = get_cookie("address") || "Enter place name or address.";
+    $form = $container.find("form[name=location_search]");
+    $input = $form.find("input");
+    $button = $form.find("button");
     
-    form.prepend($("<label>", {
-      "for": input.attr("id")      
+    $form.prepend($("<label>", {
+      "for": $input.attr("id")      
     }).html("Search:"));
     
-    form.submit(function(){
-      address = input.val();
+    $form.submit(function(){
+      address = $input.val();
       find(address);
       set_cookie("address", address);
       return false;
     });
     
-    input.val(address).select();
+    $input.val(address).select();
     
-    save = $("<button class='Butt'>SAVE LOCATION</button>");
-    cancel = $("<button class='CancelButt'>CANCEL</button>");
+    $save = $("<button class='Butt'>SAVE LOCATION</button>");
+    $cancel = $("<button class='CancelButt'>CANCEL</button>");
     
-    container.append(save).append(cancel);
-    cancel.click(hide);    
+    $container.append($save).append($cancel);
+    $cancel.click(hide);
   }
   
   function get_initial_position(){
@@ -143,13 +143,17 @@
     zoom = zoom || parseFloat(parts[2], 10) || 2;
     
     map_type = parts[3] || google.maps.MapTypeId.ROADMAP;
+    
+    address = $("#photoGeolocation-storylink").html() || 
+      get_cookie("address") || 
+      "Enter place name or address.";
   }
   
   function init_map(){
     
     get_initial_position();
     
-    map = new google.maps.Map(container.find(".map")[0], {
+    map = new google.maps.Map($container.find(".map")[0], {
       zoom: zoom,
       center: new google.maps.LatLng(lat, lng),
       mapTypeId: map_type,
@@ -249,7 +253,7 @@
         position(geometry.location);
       } else {
         alert("Could not find location.");
-        input.select();
+        $input.select();
       }
     });
   }
@@ -274,13 +278,13 @@
   }
 
   function show(){
-    background.show();
-    container.show();
+    $background.show();
+    $container.show();
   }
   
   function hide(){
-    background.hide();
-    container.hide();
+    $background.hide();
+    $container.hide();
   }
   
   window.geocoding_bookmarklet = {
