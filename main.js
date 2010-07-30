@@ -78,7 +78,7 @@
     
     log("magic cookie", magic_cookie, 1234);
     
-    $spinner = $("<div class='spinner'/>");
+    
     
     $background = $("<div>", {
       id: 'flickr_bookmarklet_background',
@@ -91,7 +91,7 @@
     $container.html(html);
     $container.find(".close").click(hide);
     $container.find(".breadcrumb h3").html("Choose your location");
-    $container.append($spinner);
+
 
     $("body").append($container).append($background);
   }
@@ -116,11 +116,11 @@
     
     $input.val(address).select();
     
+    $spinner = $("<div class='spinner'/>");
     $save = $("<button class='DisabledButt'>SAVE LOCATION</button>");
     $cancel = $("<button class='CancelButt'>CANCEL</button>");
     $submit_form = $("<div>", {id: "submit_form"});
-        
-    $container.append($save).append($cancel).append($submit_form);
+    $container.append($save).append($cancel).append($spinner).append($submit_form);
     $cancel.click(cancel);
   }
   
@@ -257,8 +257,6 @@
     
     set_cookie("location", info.join(","));
     
-    $save.removeClass("DisabledButt").addClass("Butt");
-    
     if (!skip_server){
       check_position();
     }
@@ -278,6 +276,8 @@
     console.log(data);
     
     $spinner.show();
+    $submit_form.html("");
+    
     $.post(CONFIRM_URL, data, function(html){
      
      $submit_form.html(html);
@@ -285,9 +285,8 @@
      $submit_form.find("fieldset div div").html("Location:");
      $submit_form.find("[name=save_perm_viewgeo]").parent().parent().hide();
      
-     console.log(arguments, html, $submit_form);
-     
-     $spinner.hide();
+     $spinner.hide();     
+     $save.removeClass("DisabledButt").addClass("Butt");
     });
   }
   

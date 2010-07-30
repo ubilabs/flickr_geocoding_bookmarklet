@@ -24,6 +24,9 @@
 #flickr_bookmarklet .map {
   width: 1000px;
   height: 400px;
+}
+
+#flickr_bookmarklet .location-overlay-wrapper {
   margin: 0 0 1em 0;
 }
 
@@ -63,12 +66,11 @@
 }
 
 #flickr_bookmarklet div.spinner {
-  background:url("http://l.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 50% 50% #FFFFFF;
-  height:20px;
-  position:absolute;
-  right:34px;
-  top:8px;
-  width:24px;
+  background: url("http://l.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 0 5px #FFFFFF;
+  display: inline-block;
+  height: 25px;
+  margin: 0 0 -9px 1em;
+  width: 24px;
 }
 
 #flickr_bookmarklet #submit_form button {
