@@ -70,3 +70,17 @@
   top:8px;
   width:24px;
 }
+
+#flickr_bookmarklet #submit_form button {
+  display: none;
+}
+
+#flickr_bookmarklet #submit_form {
+  margin-left: 1em;
+}
+
+#flickr_bookmarklet #submit_form,
+#flickr_bookmarklet #submit_form fieldset,
+#flickr_bookmarklet #submit_form fieldset div div {
+  display: inline-block;
+}

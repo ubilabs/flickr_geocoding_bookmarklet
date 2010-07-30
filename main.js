@@ -4,6 +4,7 @@
     BASE_URL = "http://localhost:8000/",
     JQUERY_SRC = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
     GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&callback=?",
+    CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
     STYLE_URL = BASE_URL + "main.css",
     MARKER_SRC = BASE_URL + "/arrow.png",
     PANEL_SRC = "/photo_geopanel_fragment.gne",
@@ -22,7 +23,8 @@
     $container,
     $background,
     $save, 
-    $cancel;
+    $cancel,
+    $submit_form;
     
   function log(){
     if (window.console && typeof window.console.log == "function"){
@@ -116,8 +118,9 @@
     
     $save = $("<button class='DisabledButt'>SAVE LOCATION</button>");
     $cancel = $("<button class='CancelButt'>CANCEL</button>");
-    
-    $container.append($save).append($cancel);
+    $submit_form = $("<div>", {id: "submit_form"});
+        
+    $container.append($save).append($cancel).append($submit_form);
     $cancel.click(cancel);
   }
   
@@ -235,9 +238,12 @@
     });
   }
   
-  function position(latLng){
+  function position(latLng, skip_server){
     
     marker.setPosition(latLng);
+    
+    lat = latLng.lat();
+    lng = latLng.lng();
     
     if (!marker.getVisible()){
       marker.setVisible(true);
@@ -252,6 +258,37 @@
     set_cookie("location", info.join(","));
     
     $save.removeClass("DisabledButt").addClass("Butt");
+    
+    if (!skip_server){
+      check_position();
+    }
+  }
+  
+  function check_position(){
+    var data = {
+      accuracy: map.getZoom(),
+      center_map: true,
+      edit_mode: "0,edit",
+      latitude: lat,
+      longitude: lng,
+      magic_cookie: magic_cookie,
+      viewgeo: 0
+    };
+    
+    console.log(data);
+    
+    $spinner.show();
+    $.post(CONFIRM_URL, data, function(html){
+     
+     $submit_form.html(html);
+     
+     $submit_form.find("fieldset div div").html("Location:");
+     $submit_form.find("[name=save_perm_viewgeo]").parent().parent().hide();
+     
+     console.log(arguments, html, $submit_form);
+     
+     $spinner.hide();
+    });
   }
   
   function find(address){
@@ -300,14 +337,15 @@
         initial_position.lat, 
         initial_position.lng
       );
-      position(latLng);
+      position(latLng, true);
       map.setCenter(latLng);
-      map.setZoom(initial_position.zoom);      
+      map.setZoom(initial_position.zoom);
     } else {
       marker.setVisible(false);
     }
     
     $save.removeClass("Butt").addClass("DisabledButt");
+    $submit_form.html("");
     hide();  
   }
 
