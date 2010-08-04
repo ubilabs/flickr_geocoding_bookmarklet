@@ -393,6 +393,28 @@
     
     $spinner.show();
     
+    $.post(CONFIRM_URL, data, function(respose){
+      
+      var taken_in, woe, zoom = [4, 7, 14];
+      woe = respose.woe;
+      taken_in = woe.taken_in_clean;
+      
+      if (taken_in){
+        taken_in = taken_in.replace("Taken in ", "");
+        $("#photoGeolocation-storylink").html(taken_in);
+      }
+      
+      $("#photoGeolocation-smallmap img").each(function(index){
+        var src = "http://gws.maps.yahoo.com/MapImage?appid=FlickrDev" + 
+          "&clat=" + lat + 
+          "&clon=" + lng +
+          "&zoom=" + zoom[index] +
+          "&imh=100&imw=300&mflags=YKM";
+        
+        $(this).attr("src", src);
+      })
+      
+      
     }, "json");
 
     data = {
