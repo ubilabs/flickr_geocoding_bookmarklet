@@ -90,24 +90,19 @@
     PHOTO_ID = get_secrets("photo_id");
     
     IS_OWNER = /isOwner:\s*true/.test(script);  
-    
-    console.log("PHOTO_ID", PHOTO_ID);
-    
+        
     /* 
     * REGEX to match braces
     * \(\{(?:(?!\}).)*\}\);
     * 
     * photo_conf = script.match(/Y\.photo(\(\{[^\)]*\));/);
     * api_conf = script.match(/flickrAPI\:([^(\})]*\})/);
-    *
-    * 
     * 
     * console.log(api_conf && api_conf[1], photo_conf && photo_conf[1]);
     * console.log(eval(photo_conf[1]));
     * console.log(eval("(" + api_conf[1] + ")"));
     * 
     */
-    
     
   }
   
@@ -122,6 +117,7 @@
       
       get_initial_position();
       draw_panel(html);
+      update_clicks();
 
       init_form();
       $spinner.hide();
@@ -135,6 +131,14 @@
         });
       }
 
+    });
+  }
+  
+  
+  function update_clicks(){
+    $("#photo-story-copyright").click(function(){
+      reload();
+      return false;
     });
   }
   
@@ -361,8 +365,6 @@
       magic_cookie: MAGIC_COOKIE,
       viewgeo: 0
     };
-    
-    console.log(data);
     
     $spinner.show();
     $submit_form.html("");
