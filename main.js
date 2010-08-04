@@ -6,12 +6,14 @@
     JQUERY_SRC = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
     GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&callback=?",
     CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
+    SAVE_URL = "http://www.flickr.com/services/rest/?jsoncallback=?",
     MAGIC_COOKIE,
     API_KEY,
     API_SECRET,
     AUTH_TOKEN,
     AUTH_HASH,
     IS_OWNER,
+    PHOTO_ID,
     STYLE_URL = BASE_URL + "main.css",
     MARKER_SRC = BASE_URL + "/arrow.png",
     PANEL_SRC = "/photo_geopanel_fragment.gne",
@@ -74,7 +76,7 @@
 
     get_secrets = function(key){     
       var regex, match;
-      regex = new RegExp(key + ": '([a-z0-9]*)'", "i");
+      regex = new RegExp(key + ": '([a-z0-9\"]*)'", "i");
       match = script.match(regex);
       return match && match[1];
     }
@@ -85,34 +87,11 @@
     API_KEY = get_secrets("api_key");
     AUTH_TOKEN = get_secrets("auth_token");
     AUTH_HASH = get_secrets("auth_hash");
+    PHOTO_ID = get_secrets("photo_id");
     
-    IS_OWNER = /isOwner:\s*true/.test(script);
+    IS_OWNER = /isOwner:\s*true/.test(script);  
     
-    /*  
-      http://www.flickr.com/services/rest/?format=json
-        clientType=yui-3-flickrapi-module
-        api_key=cbe5f7a75432bfa21beb1251749ccadd
-        auth_hash=3494b85736b63e6f1c44cbf7ea147440
-        auth_token=
-        secret=c19dfa8853cbe461
-        photo_id=4811794241
-        lat=50.998767516993
-        lon=7.0349736185744
-        accuracy=13
-        method=flickr.photos.geo.setLocation
-        jsoncallback=YUI.flickrAPITransactions.flapicb2
-        cachebust=1280950088239
-
-
-
-      ftxt.match(/api_key: '([A-Za-z0-9]+)'/);
-      ftxt.match(/auth_hash: '([A-Za-z0-9]+)'/);
-      ftxt.match(/nsid: '(.*)'/g);
-      ftxt.match(/photos_url: '(.*)'/g);
-
-
-    */
-    
+    console.log("PHOTO_ID", PHOTO_ID);
     
     /* 
     * REGEX to match braces
@@ -412,12 +391,53 @@
       data[this.name] = this.value;
     });
     
-    $.post(CONFIRM_URL, data, function(html){
-     
-      console.log(arguments);
-      $spinner.hide();     
-      $save.addClass("DisabledButt").removeClass("Butt");
+    $spinner.show();
+    
     }, "json");
+
+    data = {
+      format: "json",
+      clientType: "yui-3-flickrapi-module",
+      api_key: API_KEY,
+      auth_hash: AUTH_HASH,
+      auth_token: AUTH_TOKEN,
+      secret: API_SECRET,
+      photo_id: PHOTO_ID,
+      lat: lat,
+      lon: lng,
+      accuracy: map.getZoom(),
+      method: "flickr.photos.geo.setLocation",
+      cachebust: Number(new Date())
+    }
+
+    $.getJSON(SAVE_URL, data, function(response){
+      
+      $spinner.hide();
+      $save.addClass("DisabledButt").removeClass("Butt");
+      
+      if (response.stat == "ok"){
+        form.html("Saved.").delay(2000).fadeOut();        
+      } else {
+        form.html("Error: " + response.message);
+      }
+    });
+
+    
+    /*  
+      http://www.flickr.com/services/rest/?format=json
+        clientType=yui-3-flickrapi-module
+        api_key=cbe5f7a75432bfa21beb1251749ccadd
+        auth_hash=3494b85736b63e6f1c44cbf7ea147440
+        auth_token=
+        secret=c19dfa8853cbe461
+        photo_id=4811794241
+        lat=50.998767516993
+        lon=7.0349736185744
+        accuracy=13
+        method=flickr.photos.geo.setLocation
+        jsoncallback=YUI.flickrAPITransactions.flapicb2
+        cachebust=1280950088239
+    */
   }
 
   
