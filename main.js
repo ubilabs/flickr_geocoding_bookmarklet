@@ -45,7 +45,9 @@
   function reload(){
     show();
     $input.select();
-    google.maps.event.trigger(map, "resize");
+    if (map){
+      google.maps.event.trigger(map, "resize");
+    }
   }
   
   function load_jquery(){
@@ -74,10 +76,8 @@
       var regex, match;
       regex = new RegExp(key + ": '([a-z0-9]*)'", "i");
       match = script.match(regex);
-      
       return match && match[1];
     }
-    
     
     MAGIC_COOKIE = $("input[name=magic_cookie]").val();
     
@@ -87,8 +87,6 @@
     AUTH_HASH = get_secrets("auth_hash");
     
     IS_OWNER = /isOwner:\s*true/.test(script);
-    
-    console.log(AUTH_HASH, API_KEY, AUTH_TOKEN, API_SECRET);
     
     /*  
       http://www.flickr.com/services/rest/?format=json
@@ -142,20 +140,37 @@
     get_secrets();
     
     $.get(PANEL_SRC, function(html){
+      
+      get_initial_position();
       draw_panel(html);
-      $.getJSON(GMAPS_API, function(){
-        init_map();
-        init_marker();
-      });
 
       init_form();
       $spinner.hide();
+      
+      if (!IS_OWNER && !initial_position){
+        draw_empty_panel();
+      } else {
+        $.getJSON(GMAPS_API, function(){
+          init_map();
+          init_marker();
+        });
+      }
+
     });
   }
+  
+  function draw_empty_panel(){
+    $container.addClass("no_location");
+    $container.html(
+      "<div>Uuuh no, this photo has no location :(</div>"
+    );
     
+    $cancel = $("<button class='Butt'>CLOSE THIS MESSAGE</button>");
+    $container.append($cancel);
+    $cancel.click(hide);
+  }
+  
   function draw_panel(html){
-    
-    
     
     $background = $("<div>", {
       id: 'flickr_bookmarklet_background',
@@ -250,8 +265,6 @@
   }
   
   function init_map(){
-    
-    get_initial_position();
     
     map = new google.maps.Map($container.find(".map")[0], {
       zoom: zoom,
