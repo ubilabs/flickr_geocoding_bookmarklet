@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Ubilabs - Flickr Geocoding Bookmarklet</title>
+  <style type="text/css" media="screen">
+    html, body {
+      font-family:Arial,Helvetica,sans-serif;
+      line-height: 1.3em;
+    } 
+    
+    a:link {
+      color: #0063DC;
+      
+    }
+
+    a:hover {
+      color: #FFF;
+      background-color: #0063DC;
+      text-decoration: none;
+    }
+
+    
+    h3 {
+      font-weight: normal;
+    }
+    
+  </style>
+</head>
+<body>
+    <h3>New Flickr Geocoding Bookmarklet</h3>
+    <p>
+      Drag this link to your bookmarks:
+      <a href='javascript:%20(function(){if(window.geocoding_bookmarklet){geocoding_bookmarklet.reload();return;}%20var%20script=document.createElement("script");script.src="http://github.com/ubilabs/flickr_geocoding_bookmarklet/raw/master/main.js?" + Math.random();document.body.appendChild(script);})();'>Localize</a>
+    </p>
+    <small>
+      Note: This is still in development. <a href="http://www.flickr.com/groups/geotagging/discuss/72157594165549916/72157624650927010/">Read more</a>
+    </small>
+</body>
+</html>
