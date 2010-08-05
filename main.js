@@ -1,8 +1,8 @@
 (function(window, undefined){
   
   var $,
-    //BASE_URL = "http://192.168.1.208:8000/",
-    BASE_URL = "http://localhost:8000/",
+    // BASE_URL = "http://192.168.1.208:8000/",
+    BASE_URL = "http://github.com/ubilabs/flickr_geocoding_bookmarklet/raw/master/",
     JQUERY_SRC = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
     GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&callback=?",
     CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
