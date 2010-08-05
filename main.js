@@ -297,7 +297,7 @@
       zoom = parseFloat(parts[2], 10) || 2;
     }
     
-    map_type = parts[3] || google.maps.MapTypeId.ROADMAP;
+    map_type = parts[3];
     
     address = $("#photoGeolocation-storylink").html() || 
       get_cookie("address") || 
@@ -310,7 +310,7 @@
     map = new google.maps.Map($map[0], {
       zoom: zoom,
       center: new google.maps.LatLng(lat, lng),
-      mapTypeId: map_type,
+      mapTypeId: map_type || google.maps.MapTypeId.ROADMAP,
       mapTypeControlOptions: {
         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
       }
