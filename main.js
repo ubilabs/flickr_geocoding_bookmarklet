@@ -26,6 +26,7 @@
     address,
     marker,
     geocoder,
+    $map,
     $input,
     $spinner,
     $container,
@@ -155,6 +156,8 @@
   
   function draw_panel(html){
     
+    var $close, $maximize;
+    
     $background = $("<div>", {
       id: 'flickr_bookmarklet_background',
       title: "Close"
@@ -164,7 +167,30 @@
     
     $container = $("<div>", {id: 'flickr_bookmarklet'});
     $container.html(html);
-    $container.find(".close").click(hide);
+    
+    $close = $container.find(".close");
+    
+    $close.click(hide);
+    $maximize = $("<span class='maximize'>maximize</span>");
+    
+    $close.before($maximize);
+    
+    var maximized = false;
+    $maximize.toggle(function(){
+      var center = map.getCenter();
+      $container.addClass("maximized");
+      $maximize.html("restore");
+      $map.height($(window).height() -140);
+      google.maps.event.trigger(map, 'resize');
+      map.setCenter(center);
+    }, function(){
+      var center = map.getCenter();
+      $maximize.html("maximize");
+      $container.removeClass("maximized");
+      $map.height(400);
+      google.maps.event.trigger(map, 'resize');
+      map.setCenter(center);
+    });
     
     $container.find(".breadcrumb h3").html(
       'Location for "'+
@@ -248,8 +274,9 @@
   }
   
   function init_map(){
+    $map = $container.find(".map");
     
-    map = new google.maps.Map($container.find(".map")[0], {
+    map = new google.maps.Map($map[0], {
       zoom: zoom,
       center: new google.maps.LatLng(lat, lng),
       mapTypeId: map_type,
