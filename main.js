@@ -42,7 +42,38 @@
   }
   
   function initialize(){
+    
+    if (!document.location.href.match("flickr.com")){
+      if (document.location.href.match("github")) {
+        // if he click the bookmarklet link at typolis, show him some infos who to use bookmarklets
+        alert(
+          "Localize Bookmarklet HowTo: \n " +
+          "- Drag this link to your bookmarks. \n " +
+          "- Rename it if you want. \n " +
+          "- Visit your Flickr photo page. \n " +
+          "- Click the bookmarklet to inject the fancy code."
+        );
+        
+      } else {
+        // ask user if he wants to move to Flickr
+        var goto_flickr = confirm(
+          "This bookmarklet does not work at this page.\n" +
+          "Do you want to move over to Flickr?"
+        );
+        if (goto_flickr){
+          document.location.href = "http://flickr.com/";
+        }
+      }
+      return;
+    }
+
     load_jquery();
+    
+    window.geocoding_bookmarklet = {
+      initialize: initialize,
+      reload: reload
+    };
+
   }
   
   function reload(){
@@ -559,11 +590,6 @@
     $background.hide();
     $container.hide();
   }
-  
-  window.geocoding_bookmarklet = {
-    initialize: initialize,
-    reload: reload
-  };
   
   initialize();
 
