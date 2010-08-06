@@ -126,3 +126,7 @@
 #flickr_bookmarklet.no_location div {
   margin: 0.5em 0 1em 0;  
 }
+
+#flickr_bookmarklet .link {
+  float: right;
+}

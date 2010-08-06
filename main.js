@@ -14,7 +14,7 @@
     AUTH_HASH,
     IS_OWNER,
     PHOTO_ID,
-    STYLE_URL = BASE_URL + "main.css",
+    STYLE_URL = BASE_URL + "main.css?" + Number(new Date()),
     MARKER_SRC = BASE_URL + "/arrow.png",
     PANEL_SRC = "/photo_geopanel_fragment.gne",
     map,
@@ -111,7 +111,7 @@
       regex = new RegExp(key + ": '([a-z0-9\"]*)'", "i");
       match = script.match(regex);
       return match && match[1];
-    }
+    };
     
     MAGIC_COOKIE = $("input[name=magic_cookie]").val();
     
@@ -233,7 +233,7 @@
   }
   
   function init_form(){
-    var $form, $button;
+    var $form, $button, $link;
 
     $form = $container.find("form[name=location_search]");
     $input = $form.find("input");
@@ -255,14 +255,16 @@
     
     if (IS_OWNER){
       $cancel = $("<button class='CancelButt'>CANCEL</button>");
-      $container.append($save)
+      $container.append($save);
       $save.click(save_postion);
     } else {
       $cancel = $("<button class='CancelButt'>CLOSE</button>");
     }
     
+    $link = $("<a href='http://www.flickr.com/groups/geotagging/discuss/72157594165549916/' target='_blank' class='link'>Feedback</a>");
+    
     $submit_form = $("<div>", {id: "submit_form"});
-    $container.append($cancel).append($spinner).append($submit_form);
+    $container.append($cancel).append($spinner).append($submit_form).append($link);
 
     $cancel.click(cancel);
   }
@@ -472,8 +474,7 @@
           "&imh=100&imw=300&mflags=YKM";
         
         $(this).attr("src", src);
-      })
-      
+      });
       
     }, "json");
 
@@ -487,10 +488,10 @@
       photo_id: PHOTO_ID,
       lat: lat,
       lon: lng,
-      accuracy: map.getZoom(),
+      accuracy: Math.min(16, map.getZoom()),
       method: "flickr.photos.geo.setLocation",
       cachebust: Number(new Date())
-    }
+    };
 
     $.getJSON(SAVE_URL, data, function(response){
       
@@ -498,7 +499,7 @@
       $save.addClass("DisabledButt").removeClass("Butt");
       
       if (response.stat == "ok"){
-        form.html("Saved.").delay(2000).fadeOut();        
+        form.html("Saved.").delay(2000).fadeOut();
       } else {
         form.html("Error: " + response.message);
       }
@@ -594,5 +595,3 @@
   initialize();
 
 })(window);
-
-
