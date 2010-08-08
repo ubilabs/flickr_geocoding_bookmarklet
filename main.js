@@ -583,8 +583,8 @@
   }
 
   function show(){
-    $background.show();
-    $container.show();
+    $background && $background.show();
+    $container && $container.show();
   }
   
   function hide(){
