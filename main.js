@@ -44,7 +44,7 @@
   function initialize(){
     
     if (!document.location.href.match("flickr.com")){
-      if (document.location.href.match("github")) {
+      if (document.location.href.match("github") || document.location.href.match("sumaato")) {
         // if he click the bookmarklet link at typolis, show him some infos who to use bookmarklets
         alert(
           "Localize Bookmarklet HowTo: \n " +
