@@ -1,3 +1,8 @@
+/*  
+  Written by Martin Kleppe, modified by Ken Mayer 2010.  
+  Neither party is responsible for damage or loss due to use.
+  http://www.flickr.com/groups/geotagging/discuss/72157594165549916/
+*/
 (function(window, undefined){
   
   var $,
@@ -7,12 +12,15 @@
     GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&callback=?",
     CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
     SAVE_URL = "http://www.flickr.com/services/rest/?jsoncallback=?",
+    POST_URL = "http://www.ﬂickr.com/services/rest/",
+    BOOKMARK_URL = "http://www.flickr.com/groups/geotagging/discuss/72157594165549916/",
     MAGIC_COOKIE,
     API_KEY,
     API_SECRET,
     AUTH_TOKEN,
     AUTH_HASH,
     IS_OWNER,
+    USER_NSID,
     PHOTO_ID,
     STYLE_URL = BASE_URL + "main.css?" + Number(new Date()),
     MARKER_SRC = BASE_URL + "/arrow.png",
@@ -33,7 +41,12 @@
     $background,
     $save, 
     $cancel,
-    $submit_form;
+    $submit_form,
+    THE_TAGS,
+    THE_DESCRIPTION,
+    THE_TITLE,
+    LAST_TAG_REMOVED=false;
+    
     
   function log(){
     if (window.console && typeof window.console.log == "function"){
@@ -108,7 +121,7 @@
 
     get_secrets = function(key){     
       var regex, match;
-      regex = new RegExp(key + ": '([a-z0-9\"]*)'", "i");
+      regex = new RegExp(key + ": '([a-z0-9@\"]*)'", "i");
       match = script.match(regex);
       return match && match[1];
     };
@@ -120,7 +133,7 @@
     AUTH_TOKEN = get_secrets("auth_token");
     AUTH_HASH = get_secrets("auth_hash");
     PHOTO_ID = get_secrets("photo_id");
-    
+    USER_NSID = get_secrets("nsid");
     IS_OWNER = /isOwner:\s*true/.test(script);  
         
     /* 
@@ -135,7 +148,6 @@
     * console.log(eval("(" + api_conf[1] + ")"));
     * 
     */
-    
   }
   
   function jquery_loaded(){
@@ -146,7 +158,6 @@
     get_secrets();
     
     $.get(PANEL_SRC, function(html){
-      
       get_initial_position();
       draw_panel(html);
       update_clicks();
@@ -154,14 +165,10 @@
       init_form();
       $spinner.hide();
       
-      if (!IS_OWNER && !initial_position){
-        draw_empty_panel();
-      } else {
-        $.getJSON(GMAPS_API, function(){
-          init_map();
-          init_marker();
-        });
-      }
+      $.getJSON(GMAPS_API, function(){
+        init_map();
+        init_marker();
+      });
 
     });
   }
@@ -251,15 +258,11 @@
     });
     
     $spinner = $("<div class='spinner'/>");
-    $save = $("<button class='DisabledButt'>SAVE LOCATION</button>");
+    $save = $("<button class='Butt'>SAVE LOCATION</button>");
     
-    if (IS_OWNER){
       $cancel = $("<button class='CancelButt'>CANCEL</button>");
       $container.append($save);
-      $save.click(save_postion);
-    } else {
-      $cancel = $("<button class='CancelButt'>CLOSE</button>");
-    }
+      $save.click(save_position);
     
     $link = $("<a href='http://www.flickr.com/groups/geotagging/discuss/72157594165549916/' target='_blank' class='link'>Feedback</a>");
     
@@ -269,20 +272,50 @@
     $cancel.click(cancel);
   }
   
+  function getQueryVariable(variable, string) {
+	  var vars = string.split("&");
+	  for (var i=0; i<vars.length; i++) {
+	    var pair = vars[i].split("=");
+	    if (pair[0] == variable) {
+	      return pair[1]; 
+	    }
+		}
+		return "";
+	}
+	 
   function get_initial_position(){
-    var src, match, last_location, parts = [];
-    
-    src = $("#photo-story-map img:last").attr("src") || "";
-    match = src.match(/clat=([\d.-]*)&clon=([\d.-]*)&zoom=([\d.-]*)/);
-    
-    if (match){
-      initial_position = {
-        lat: parseFloat(match[1], 10),
-        lng: parseFloat(match[2], 10),
-        zoom: parseFloat(match[3], 10)
-      };
+    var src, match, last_location, parts = [];    
+    src = $("#photo-story-map-zoom-street").attr("src");
+    if (!src || src.indexOf("&clat")<1) {
+      src = $("#photo-story-map-zoom-street").attr("data-defer-src");
     }
     
+    if (src && getQueryVariable("clat", src)){
+      initial_position = {    
+	      lat :parseFloat(getQueryVariable("clat", src), 10),
+	      lng :parseFloat(getQueryVariable("clon", src), 10),
+	      zoom :20
+     	};
+    } else { 	
+   		 // checks to see if the location is stored in geotags
+   		 var theLinksText = $("#sidecar a").text();
+   		 if (theLinksText.indexOf("geo:lat")>0) {
+   			tagTrash = theLinksText.split("geo:lat=");
+   			var clat=tagTrash[1].split("[")[0];
+    		if (theLinksText.indexOf("geo:lon")>0) {
+    			tagTrash = theLinksText.split("geo:lon=");
+   				var clon=tagTrash[1].split("[")[0];
+			  }
+     		if (clat && clon){
+		      initial_position = {    
+			      lat :parseFloat(clat, 10),
+			      lng :parseFloat(clon, 10),
+			      zoom :20
+		     	};
+	      }
+			}
+   	}			
+     
     last_location = get_cookie("location");
     
     if (last_location) {
@@ -291,7 +324,7 @@
     
     if (initial_position){
       lat = initial_position.lat;
-      lng = initial_position.lng ;
+      lng = initial_position.lng;
       zoom = initial_position.zoom;
     } else {
       lat = parseFloat(parts[0], 10) || 30;
@@ -304,6 +337,7 @@
     address = $("#photoGeolocation-storylink").html() || 
       get_cookie("address") || 
       "Enter place name or address.";
+      address = address.replace(/&nbsp;/g," ");
   }
   
   function init_map(){
@@ -340,15 +374,15 @@
     
     marker = new google.maps.Marker({
       map: map,
-      title: IS_OWNER ? "Drag me!" : null,
-      draggable: IS_OWNER,
-      visible: !!initial_position,
+      title: "Drag me!" ,
+      draggable: true,
+      visible: true,
       icon: icon,
       position: map.getCenter(),
       shadow: shadow
     });
     
-    message = IS_OWNER ? "<h3>Drag me</h3>" : "This photo was taken in <br/>" + address + ".";
+    message = "<h3>Drag me</h3>";
     
     infowindow = new google.maps.InfoWindow();
     info_hidden = true;
@@ -363,7 +397,7 @@
       infowindow.close();
       info_hidden = true;
     };
-
+    check_position();
     google.maps.event.addListener(marker, 'click', function(){
       if (info_hidden){
         show_info();
@@ -385,8 +419,6 @@
   }
   
   function position(latLng, skip_server){
-    
-    if (!IS_OWNER){ return; }
     
     marker.setPosition(latLng);
     
@@ -441,41 +473,24 @@
     });
   }
   
-  function save_postion(){
+  function save_position(){
+    var theDescription ="";
+    var theTitle="";
     
     if ($save.hasClass("DisabledButt")){ return; }
     
+    $save.removeClass("Butt").addClass("DisabledButt");
     var data = {}, form; 
     
     form = $submit_form.find(".flickrmap_locationconfirm");
-    
     $.each(form.serializeArray(), function(){
       data[this.name] = this.value;
     });
     
     $spinner.show();
     
-    $.post(CONFIRM_URL, data, function(respose){
-      
-      var taken_in, woe, zoom = [4, 7, 14];
-      woe = respose.woe;
-      taken_in = woe.taken_in_clean;
-      
-      if (taken_in){
-        taken_in = taken_in.replace("Taken in ", "");
-        $("#photoGeolocation-storylink").html(taken_in);
-      }
-      
-      $("#photoGeolocation-smallmap img").each(function(index){
-        var src = "http://gws.maps.yahoo.com/MapImage?appid=FlickrDev" + 
-          "&clat=" + lat + 
-          "&clon=" + lng +
-          "&zoom=" + zoom[index] +
-          "&imh=100&imw=300&mflags=YKM";
-        
-        $(this).attr("src", src);
-      });
-      
+    $.post(CONFIRM_URL, data, function(confirmResponse){
+                  
     }, "json");
 
     data = {
@@ -492,38 +507,214 @@
       method: "flickr.photos.geo.setLocation",
       cachebust: Number(new Date())
     };
-
-    $.getJSON(SAVE_URL, data, function(response){
-      
-      $spinner.hide();
-      $save.addClass("DisabledButt").removeClass("Butt");
-      
-      if (response.stat == "ok"){
-        form.html("Saved.").delay(2000).fadeOut();
-      } else {
-        form.html("Error: " + response.message);
-      }
-    });
-
     
-    /*  
-      http://www.flickr.com/services/rest/?format=json
-        clientType=yui-3-flickrapi-module
-        api_key=cbe5f7a75432bfa21beb1251749ccadd
-        auth_hash=3494b85736b63e6f1c44cbf7ea147440
-        auth_token=
-        secret=c19dfa8853cbe461
-        photo_id=4811794241
-        lat=50.998767516993
-        lon=7.0349736185744
-        accuracy=13
-        method=flickr.photos.geo.setLocation
-        jsoncallback=YUI.flickrAPITransactions.flapicb2
-        cachebust=1280950088239
-    */
+    if (IS_OWNER) {
+    	$.getJSON(SAVE_URL, data, function(saveResponse){		      
+	      if (saveResponse.stat == "ok"){
+	        form.html("Location Saved");
+	        getInfo();
+	      } else {
+	        form.html("Error: " + saveResponse.message);
+	      }
+	    });
+  	} else {
+		  getInfo();
+  	}
   }
 
-  
+  // gets the photo title, description, and tags       
+  function getInfo() {
+    var data = {
+      format: "json",
+      clientType: "yui-3-flickrapi-module",
+      api_key: API_KEY,
+      auth_hash: AUTH_HASH,
+      auth_token: AUTH_TOKEN,
+      secret: API_SECRET,
+      photo_id: PHOTO_ID,
+      method: "flickr.photos.getInfo",
+      cachebust: Number(new Date())
+    };
+
+    $.getJSON(SAVE_URL, data, function(infoResponse){
+      if (infoResponse.stat == "ok"){
+        THE_TAGS = infoResponse.photo.tags.tag;
+     	  THE_DESCRIPTION = infoResponse.photo.description._content;    	
+     	  THE_TITLE = infoResponse.photo.title._content;
+        removeTags(THE_TAGS);
+      } else {
+        form.html("Error getting data: " + infoResponse.message);
+      }
+    });
+  }
+
+  function removeTags(tagArray) {
+		var removeArray = [];
+		
+		if (IS_OWNER) {
+			$.each(tagArray, function() {
+			  if (this.raw.indexOf("geo:")>-1) {
+			    removeArray.push(this.id);  
+			  }
+			});
+		} else {
+			$.each(tagArray, function() {
+			  if (this.raw.indexOf("geo:")>-1 && this.author==USER_NSID){
+			    removeArray.push(this.id);
+			  }
+			});
+		}
+ 			
+ 		while (removeArray.length > 0) { 
+			var removeMe=removeArray.shift();
+	  
+	    if (removeArray.length == 0) { 
+	      LAST_TAG_REMOVED = true;
+	    }
+	      
+	    data = {
+	      format: "json",
+	      clientType: "yui-3-flickrapi-module",
+	      api_key: API_KEY,
+	      auth_hash: AUTH_HASH,
+	      auth_token: AUTH_TOKEN,
+		    secret: API_SECRET,
+	      photo_id: PHOTO_ID,
+	   	  tag_id: removeMe,
+	      method: "flickr.photos.removeTag",
+	      cachebust: Number(new Date())  
+	    };
+	    
+		  $.getJSON(SAVE_URL, data, function(removeResponse){
+		    if (removeResponse.stat == "ok" && LAST_TAG_REMOVED) { 
+			    saveGeotags(); 
+			  }
+		  });
+		}
+		if (!LAST_TAG_REMOVED) {
+		  saveGeotags(); 
+		  // if there were no tags to remove
+		}
+ 	}
+
+  // saves the geotags
+  function saveGeotags() {
+    var data, theTag = "geo:lat=" + lat + " geo:lon=" + lng + " geotagged";
+    data = {
+      format: "json",
+      clientType: "yui-3-flickrapi-module",
+      api_key: API_KEY,
+      auth_hash: AUTH_HASH,
+      auth_token: AUTH_TOKEN,
+      secret: API_SECRET,
+      photo_id: PHOTO_ID,
+      tags: theTag,
+      method: "flickr.photos.addTags",
+      cachebust: Number(new Date())
+    };
+    
+    $.getJSON(SAVE_URL, data, function(tagResponse){
+     var form = $submit_form.find(".flickrmap_locationconfirm");
+      if (tagResponse.stat == "ok"){
+        form.html("Geotags saved.");
+        if (IS_OWNER){
+          setDescription();
+        } else {
+          addComment(theTag);
+        }
+      } else {
+        form.html("Geotag error: " + tagResponse.message);
+        if (!IS_OWNER) {
+          theTag = "http://maps.google.com/maps?q=loc:" + theTag;
+        	addComment(theTag);
+        }
+      }
+    });
+  }
+
+	// puts the loc.alize.us link in a comment
+  function addComment(theTag) {
+    var theComment = "See where this picture was taken.";
+    
+    if (theTag.indexOf("google.com")>0){
+    	theTag = theTag.replace("geo:lat=","");
+    	theTag = theTag.replace("geo:lon=",",");
+		  theTag = theTag.replace(" geotagged","&z=18");
+		  theTag = theTag.replace(/ /g,"");
+		  theComment = theComment + ": " + theTag + " <a href='" + BOOKMARK_URL + "'>[?]</a>";
+		} else {
+		  theComment = "<a href='http://loc.alize.us/#/flickr:" + PHOTO_ID + "'>" + theComment + ".</a> <a href='" + BOOKMARK_URL + "'>[?]</a>";
+		}
+		
+   	var data = {
+      format: "json",
+      clientType: "yui-3-flickrapi-module",
+      api_key: API_KEY,
+      auth_hash: AUTH_HASH,
+      auth_token: AUTH_TOKEN,
+	    secret: API_SECRET,
+      photo_id: PHOTO_ID,
+      comment_text: theComment,
+      method: "flickr.photos.comments.addComment",
+      cachebust: Number(new Date())
+    };
+    
+    $.getJSON(SAVE_URL, data, function(comResponse){
+      var form = $submit_form.find(".flickrmap_locationconfirm");
+      if (comResponse.stat == "ok"){
+        form.html("Comment saved");
+        window.location.reload();  
+        // closes the map window after saving all locations and tags
+      } else {
+        form.html("Comment error: " + comResponse.message);
+      }
+    });
+  }     
+
+  // appends the loc.alize.us link to the description
+  function setDescription() {
+    var theDescription = expungeLocalize(THE_DESCRIPTION);
+    theDescription = theDescription + "\r\r<a href='http://loc.alize.us/#/flickr:" + PHOTO_ID + "'>See where this picture was taken.</a> <a href='" + BOOKMARK_URL + "'>[?]</a>";
+    
+   	var data = {
+      format: "json",
+      clientType: "yui-3-flickrapi-module",
+      api_key: API_KEY,
+      auth_hash: AUTH_HASH,
+      auth_token: AUTH_TOKEN,
+	    secret: API_SECRET,
+      photo_id: PHOTO_ID,
+      description: theDescription,
+      title:THE_TITLE,
+      method: "flickr.photos.setMeta",
+      cachebust: Number(new Date())
+    };
+    
+    $.getJSON(SAVE_URL, data, function(localResponse){
+      var form = $submit_form.find(".flickrmap_locationconfirm");
+
+      if (localResponse.stat == "ok"){
+        form.html("Saved");
+        window.location.reload();  // closes the map window after saving all locations and tags
+      } else {
+        form.html("Loc.alize.us error: " + localResponse.message);
+      }
+    });
+  }     
+ 
+  function expungeLocalize(theString) {
+		var regEx = new RegExp("<a.*/a>", "gi");
+		var theLinks = theString.match(regEx);
+		if (theLinks) {
+  		for (var i=0;i<theLinks.length;i++){
+  			if (theLinks[i].indexOf("geolicker")>0) {
+  			  theString = theString.replace(theLinks[i],"");
+  			}
+  		}  		  
+		}
+		return theString;
+	}
+   	 
   function find(address){
     var options = {
       address: address,
@@ -562,7 +753,6 @@
   }
 
   function cancel(){
-    
     var latLng;
     
     if (initial_position){
@@ -588,8 +778,7 @@
   }
   
   function hide(){
-    $background.hide();
-    $container.hide();
+  	window.location.reload();
   }
   
   initialize();
