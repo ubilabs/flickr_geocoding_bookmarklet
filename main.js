@@ -121,7 +121,7 @@
 
     get_secrets = function(key){     
       var regex, match;
-      regex = new RegExp(key + ": '([a-z0-9@\"]*)'", "i");
+      regex = new RegExp('"' + key + '":"([^"]*)"', "i");
       match = script.match(regex);
       return match && match[1];
     };
