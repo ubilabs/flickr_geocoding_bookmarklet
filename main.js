@@ -7,7 +7,7 @@
   
   var $,
     // BASE_URL = "http://192.168.1.208:8000/",
-    BASE_URL = "http://github.com/ubilabs/flickr_geocoding_bookmarklet/raw/master/",
+    BASE_URL = "https://raw.github.com/ubilabs/flickr_geocoding_bookmarklet/master/",
     JQUERY_SRC = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
     GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&callback=?",
     CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
@@ -50,12 +50,18 @@
     
     
   function log(){
+    
+    if (!window.location.href.match("log=true")){
+      return false;
+    }
+    
     if (window.console && typeof window.console.log == "function"){
       console.log.apply(console, arguments);
     }
   }
   
-  function initialize(){
+  function initialize(){ 
+    log("Initialize");
     
     if (!document.location.href.match("flickr.com")){
       if (document.location.href.match("github") || document.location.href.match("sumaato")) {
@@ -87,10 +93,11 @@
       initialize: initialize,
       reload: reload
     };
-
   }
   
   function reload(){
+    log("Reload");
+    
     show();
     $input.select();
     if (map){
@@ -99,6 +106,8 @@
   }
   
   function load_jquery(){
+    log("Load jQuery");
+    
     var script = document.createElement("script");
     script.src = JQUERY_SRC;
     script.onload = script.onreadystatechange = jquery_loaded;
@@ -109,10 +118,12 @@
     
     var style = $("<style type='text/css'>" + STYLES + "</style>");    
     $("head").append(style);
+    log("Load Styles", style);
+
   }
   
   function get_secrets(){
-    
+    log("Get Secrets");
     var script, match, get_secrets;
     
     script = $("script").not("[src]").last().html();
@@ -144,6 +155,7 @@
     get_secrets();
     
     $.get(PANEL_SRC, function(html){
+      log("Get panel");
       get_initial_position();
       draw_panel(html);
       update_clicks();
@@ -154,13 +166,15 @@
       $.getJSON(GMAPS_API, function(){
         init_map();
         init_marker();
+        log("Ready")
       });
 
     });
   }
   
-  
   function update_clicks(){
+    log("Update Clicks");
+    
     $("#photo-story-copyright").click(function(){
       reload();
       return false;
@@ -168,6 +182,8 @@
   }
   
   function draw_empty_panel(){
+    log("Draw empty panel");
+    
     $container.addClass("no_location");
     $container.html(
       "<div>Uuuh no, this photo has no location :(</div>"
@@ -223,9 +239,12 @@
     );
 
     $("body").append($container).append($background);
+    
+    log("Container:", $container, "and background:", $background, " drawn.");
   }
   
   function init_form(){
+    
     var $form, $button, $link;
 
     $form = $container.find("form[name=location_search]");
@@ -256,9 +275,12 @@
     $container.append($cancel).append($spinner).append($submit_form).append($link);
 
     $cancel.click(cancel);
+    
+    log("Form", $form, "added.");
   }
   
   function getQueryVariable(variable, string) {
+    
 	  var vars = string.split("&");
 	  for (var i=0; i<vars.length; i++) {
 	    var pair = vars[i].split("=");
@@ -270,6 +292,8 @@
 	}
 	 
   function get_initial_position(){
+    log("Get Initial Position");
+    
     var src, match, last_location, parts = [];    
     src = $("#photo-story-map-zoom-street").attr("src");
     if (!src || src.indexOf("&clat")<1) {
@@ -327,6 +351,9 @@
   }
   
   function init_map(){
+    
+    log("Init Map");
+    
     $map = $container.find(".map");
     
     map = new google.maps.Map($map[0], {
@@ -344,6 +371,9 @@
   }
   
   function init_marker(){
+    
+    log("Init Marker");
+    
     var icon, shadow, infowindow, message, show_info, hide_info, info_hidden;
       
     icon = new google.maps.MarkerImage(MARKER_SRC,
@@ -401,10 +431,12 @@
         hide_info();
         position(event.latLng);
       }
-    });
+    });    
   }
   
   function position(latLng, skip_server){
+    
+    log("Update position");
     
     marker.setPosition(latLng);
     
@@ -429,6 +461,8 @@
   }
   
   function check_position(){
+    
+    log("Check position");
     
     var data, edit_mode;
     
@@ -460,6 +494,9 @@
   }
   
   function save_position(){
+    
+    log("Save position");
+    
     var theDescription ="";
     var theTitle="";
     
@@ -510,6 +547,9 @@
 
   // gets the photo title, description, and tags       
   function getInfo() {
+    
+    log("Get Photo Info");
+    
     var data = {
       format: "json",
       clientType: "yui-3-flickrapi-module",
@@ -535,6 +575,9 @@
   }
 
   function removeTags(tagArray) {
+    
+    log("Remove Tags");
+        
 		var removeArray = [];
 		
 		if (IS_OWNER) {
@@ -585,6 +628,9 @@
 
   // saves the geotags
   function saveGeotags() {
+    
+    log("Save Geo Tags");
+        
     var data, theTag = "geo:lat=" + lat + " geo:lon=" + lng + " geotagged";
     data = {
       format: "json",
@@ -620,6 +666,9 @@
 
 	// puts the loc.alize.us link in a comment
   function addComment(theTag) {
+    
+    log("Add Comment");
+        
     var theComment = "See where this picture was taken.";
     
     if (theTag.indexOf("google.com")>0){
@@ -659,6 +708,8 @@
 
   // appends the loc.alize.us link to the description
   function setDescription() {
+    log("Set Description");
+    
     var theDescription = expungeLocalize(THE_DESCRIPTION);
     theDescription = theDescription + "\r\r<a href='http://loc.alize.us/#/flickr:" + PHOTO_ID + "'>See where this picture was taken.</a> <a href='" + BOOKMARK_URL + "'>[?]</a>";
     
@@ -689,6 +740,9 @@
   }     
  
   function expungeLocalize(theString) {
+    
+    log("Expunge Localize");
+    
 		var regEx = new RegExp("<a.*/a>", "gi");
 		var theLinks = theString.match(regEx);
 		if (theLinks) {
@@ -702,6 +756,9 @@
 	}
    	 
   function find(address){
+    
+    log("Find Address", address);
+    
     var options = {
       address: address,
       bounds: map.getBounds()
@@ -720,6 +777,9 @@
   }
   
   function set_cookie(name, value){
+    
+    log("Set Cookie", name, "to", value);
+    
     var one_year = 365*60*60*24*200,
       expire = new Date((new Date().getTime()) + one_year);
     
@@ -730,6 +790,9 @@
   }
   
   function get_cookie(name){
+    
+    log("Get Cookie", name);
+    
     var regex, match;
     
     regex = new RegExp("ubilabs_" + name + "[^\=]*=([^\;]*)");
@@ -739,6 +802,9 @@
   }
 
   function cancel(){
+    
+    log("Cancel");
+    
     var latLng;
     
     if (initial_position){
@@ -759,11 +825,17 @@
   }
 
   function show(){
+    
+    log("Show");
+    
     $background && $background.show();
     $container && $container.show();
   }
   
   function hide(){
+    
+    log("Hide");
+    
   	window.location.reload();
   }
   
