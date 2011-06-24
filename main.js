@@ -7,7 +7,7 @@
   
   var $,
     // BASE_URL = "http://192.168.1.208:8000/",
-    BASE_URL = "https://raw.github.com/ubilabs/flickr_geocoding_bookmarklet/master/",
+    BASE_URL = "https://raw.github.com/rgould/flickr_geocoding_bookmarklet/master/",
     JQUERY_SRC = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
     GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&callback=?",
     CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
@@ -783,7 +783,7 @@
     var one_year = 365*60*60*24*200,
       expire = new Date((new Date().getTime()) + one_year);
     
-    document.cookie = "ubilabs_" +  
+    document.cookie = "rgould_" +  
       name + "=" + 
       escape(value) + "; expires=" + 
       expire.toGMTString() + "; path=/";
@@ -795,7 +795,7 @@
     
     var regex, match;
     
-    regex = new RegExp("ubilabs_" + name + "[^\=]*=([^\;]*)");
+    regex = new RegExp("rgould_" + name + "[^\=]*=([^\;]*)");
     match = document.cookie.match(regex);
     
     return match && unescape(match[1]);
