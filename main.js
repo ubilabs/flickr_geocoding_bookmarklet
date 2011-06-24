@@ -272,7 +272,11 @@
     $link = $("<a href='http://www.flickr.com/groups/geotagging/discuss/72157594165549916/' target='_blank' class='link'>Feedback</a>");
     
     $submit_form = $("<div>", {id: "submit_form"});
-    $container.append($cancel).append($spinner).append($submit_form).append($link);
+
+    checked = (get_cookie("localizeus") && get_cookie("localizeus") == "true") ? " checked" : ""
+    $localizeus = $("<label for='add_localizeus'>Add localize.us link?</label><input type='checkbox' id='add_localizeus' name='localizeus'"+checked+"/>")
+
+    $container.append($cancel).append($spinner).append($submit_form).append($localizeus).append($link);
 
     $cancel.click(cancel);
     
@@ -543,6 +547,7 @@
   	} else {
 		  getInfo();
   	}
+
   }
 
   // gets the photo title, description, and tags       
@@ -649,10 +654,17 @@
      var form = $submit_form.find(".flickrmap_locationconfirm");
       if (tagResponse.stat == "ok"){
         form.html("Geotags saved.");
-        if (IS_OWNER){
-          setDescription();
+        if ($("#add_localizeus").attr('checked') == false) {
+          set_cookie("localizeus", "false");
+          form.html("Saved");
+          window.location.reload();
         } else {
-          addComment(theTag);
+          set_cookie("localizeus", "true");
+          if (IS_OWNER){
+            setDescription();
+          } else {
+            addComment(theTag);
+          }
         }
       } else {
         form.html("Geotag error: " + tagResponse.message);
