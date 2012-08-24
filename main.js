@@ -9,12 +9,12 @@
     // BASE_URL = "http://192.168.1.208:8000/",
     BASE_URL = "https://raw.github.com/ubilabs/flickr_geocoding_bookmarklet/master/",
     JQUERY_SRC = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
-    GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&callback=?",
+    GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&libraries=places&callback=?",
     CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
     SAVE_URL = "http://www.flickr.com/services/rest/?jsoncallback=?",
     POST_URL = "http://www.ﬂickr.com/services/rest/",
     BOOKMARK_URL = "http://www.flickr.com/groups/geotagging/discuss/72157594165549916/",
-    STYLES = '#flickr_bookmarklet{font-size:12px;position:fixed;text-align:left;width:1000px;height:500px;z-index:20003;display:block;left:50%;margin-left:-505px;margin-top:-255px;top:50%;background-color:#FFFFFF;padding:10px;-moz-box-shadow:0 0 8px rgba(0,0,0,0.5);-moz-border-radius:4px 4px 4px 4px;}#flickr_bookmarklet .foot,#flickr_bookmarklet .mode-title{display:none;}#flickr_bookmarklet .map{width:1000px;height:400px;}#flickr_bookmarklet .location-overlay-wrapper{margin:0 0 1em 0;}#flickr_bookmarklet .close{background-image:url("http://l.yimg.com/g/images/close_x_sprite.png");border:0 none;cursor:pointer;height:16px;margin:0;padding:0;position:absolute;right:10px;top:10px;width:16px;}#flickr_bookmarklet .maximize{color:#666666;cursor:pointer;position:absolute;right:36px;text-align:right;text-decoration:underline;top:10px;width:100px;}#flickr_bookmarklet.maximized{width:auto;height:auto;top:10px;left:10px;right:10px;bottom:10px;margin:0;}#flickr_bookmarklet.maximized .map{width:auto;margin:0 -10px;}#flickr_bookmarklet_background{background-color:#000000;height:100%;left:0;opacity:0.35;position:fixed;top:0;width:100%;z-index:20002;cursor:pointer;filter:alpha(opacity=35);}#flickr_bookmarklet form input{margin:0 0.5em 1em 0.5em;width:20em;}#flickr_bookmarklet .DisabledButt,#flickr_bookmarklet .Butt{margin-right:5px;}#flickr_bookmarklet div.spinner{background:url("http://l.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 0 5px #FFFFFF;display:inline-block;height:25px;margin:0 0 -9px 1em;width:24px;}#flickr_bookmarklet .edit_instruction,#flickr_bookmarklet #submit_form button{display:none;}#flickr_bookmarklet #submit_form{margin-left:1em;}#flickr_bookmarklet #submit_form,#flickr_bookmarklet #submit_form fieldset,#flickr_bookmarklet #submit_form fieldset div div{display:inline-block;}#flickr_bookmarklet.no_location{width:300px;height:70px;margin-left:-205px;margin-top:-35px;text-align:center;}#flickr_bookmarklet.no_location div{margin:0.5em 0 1em 0;}#flickr_bookmarklet .link{float:right;}',
+    STYLES = '#flickr_bookmarklet{font-size:12px;position:fixed;text-align:left;width:1000px;height:500px;z-index:20003;display:block;left:50%;margin-left:-505px;margin-top:-255px;top:50%;background-color:#FFFFFF;padding:10px;-moz-box-shadow:0 0 8px rgba(0,0,0,0.5);-moz-border-radius:4px 4px 4px 4px;}#flickr_bookmarklet .foot,#flickr_bookmarklet .mode-title{display:none;}#flickr_bookmarklet .map{width:1000px;height:400px;}#flickr_bookmarklet .location-overlay-wrapper{margin:0 0 1em 0;}#flickr_bookmarklet .close{background-image:url("http://l.yimg.com/g/images/close_x_sprite.png");border:0 none;cursor:pointer;height:16px;margin:0;padding:0;position:absolute;right:10px;top:10px;width:16px;}#flickr_bookmarklet .maximize{color:#666666;cursor:pointer;position:absolute;right:36px;text-align:right;text-decoration:underline;top:10px;width:100px;}#flickr_bookmarklet.maximized{width:auto;height:auto;top:10px;left:10px;right:10px;bottom:10px;margin:0;}#flickr_bookmarklet.maximized .map{width:auto;margin:0 -10px;}#flickr_bookmarklet_background{background-color:#000000;height:100%;left:0;opacity:0.35;position:fixed;top:0;width:100%;z-index:20002;cursor:pointer;filter:alpha(opacity=35);}#flickr_bookmarklet form input{margin:0 0.5em 1em 0.5em;width:20em;}#flickr_bookmarklet .DisabledButt,#flickr_bookmarklet .Butt{margin-right:5px;}#flickr_bookmarklet div.spinner{background:url("http://l.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 0 5px #FFFFFF;display:inline-block;height:25px;margin:0 0 -9px 1em;width:24px;}#flickr_bookmarklet .edit_instruction,#flickr_bookmarklet #submit_form button{display:none;}#flickr_bookmarklet #submit_form{margin-left:1em;}#flickr_bookmarklet #submit_form,#flickr_bookmarklet #submit_form fieldset,#flickr_bookmarklet #submit_form fieldset div div{display:inline-block;}#flickr_bookmarklet.no_location{width:300px;height:70px;margin-left:-205px;margin-top:-35px;text-align:center;}#flickr_bookmarklet.no_location div{margin:0.5em 0 1em 0;}#flickr_bookmarklet .link{float:right;}.pac-container{z-index: 20004 !important;}.pac-container:after{display:none;}',
     MAGIC_COOKIE,
     API_KEY,
     API_SECRET,
@@ -26,6 +26,7 @@
     MARKER_SRC = BASE_URL + "/arrow.png",
     PANEL_SRC = "/photo_geopanel_fragment.gne",
     map,
+    autocomplete,
     lat, 
     lng, 
     zoom,
@@ -359,7 +360,7 @@
     address = $("#photoGeolocation-storylink").html() || 
       get_cookie("address") || 
       "Enter place name or address.";
-      address = address.replace(/&nbsp;/g," ");
+      address = address.replace(/&nbsp;/g," ").replace(/^\s+/, "");
   }
   
   function init_map(){
@@ -375,6 +376,22 @@
       mapTypeControlOptions: {
         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
       }
+    });
+    
+    autocomplete = new google.maps.places.Autocomplete($input[0]);
+    autocomplete.bindTo('bounds', map);
+    
+    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+      var place = autocomplete.getPlace();
+      if (place.geometry.viewport) {
+        map.fitBounds(place.geometry.viewport);
+        position(place.geometry.location);
+      } else {
+        map.setCenter(place.geometry.location);
+        map.setZoom(17);
+      }
+      position(place.geometry.location);
+      marker.setPosition(place.geometry.location);
     });
     
     geocoder = new google.maps.Geocoder();

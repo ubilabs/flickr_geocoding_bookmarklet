@@ -131,3 +131,12 @@
 #flickr_bookmarklet .link {
   float: right;
 }
+
+
+.pac-container {
+  z-index: 20004 !important;
+}
+
+.pac-container:after{
+  display:none;
+}
