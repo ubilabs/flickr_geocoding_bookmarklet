@@ -294,16 +294,16 @@
   
   function getQueryVariable(variable, string) {
     
-	  var vars = string.split("&");
-	  for (var i=0; i<vars.length; i++) {
-	    var pair = vars[i].split("=");
-	    if (pair[0] == variable) {
-	      return pair[1]; 
-	    }
-		}
-		return "";
-	}
-	 
+    var vars = string.split("&");
+    for (var i=0; i<vars.length; i++) {
+      var pair = vars[i].split("=");
+      if (pair[0] == variable) {
+        return pair[1]; 
+      }
+    }
+    return "";
+  }
+   
   function get_initial_position(){
     log("Get Initial Position");
     
@@ -315,29 +315,29 @@
     
     if (src && getQueryVariable("clat", src)){
       initial_position = {    
-	      lat :parseFloat(getQueryVariable("clat", src), 10),
-	      lng :parseFloat(getQueryVariable("clon", src), 10),
-	      zoom :20
-     	};
-    } else { 	
-   		 // checks to see if the location is stored in geotags
-   		 var theLinksText = $("#sidecar a").text();
-   		 if (theLinksText.indexOf("geo:lat")>0) {
-   			tagTrash = theLinksText.split("geo:lat=");
-   			var clat=tagTrash[1].split("[")[0];
-    		if (theLinksText.indexOf("geo:lon")>0) {
-    			tagTrash = theLinksText.split("geo:lon=");
-   				var clon=tagTrash[1].split("[")[0];
-			  }
-     		if (clat && clon){
-		      initial_position = {    
-			      lat :parseFloat(clat, 10),
-			      lng :parseFloat(clon, 10),
-			      zoom :20
-		     	};
-	      }
-			}
-   	}			
+        lat :parseFloat(getQueryVariable("clat", src), 10),
+        lng :parseFloat(getQueryVariable("clon", src), 10),
+        zoom :20
+       };
+    } else {   
+        // checks to see if the location is stored in geotags
+        var theLinksText = $("#sidecar a").text();
+        if (theLinksText.indexOf("geo:lat")>0) {
+         tagTrash = theLinksText.split("geo:lat=");
+         var clat=tagTrash[1].split("[")[0];
+        if (theLinksText.indexOf("geo:lon")>0) {
+          tagTrash = theLinksText.split("geo:lon=");
+           var clon=tagTrash[1].split("[")[0];
+        }
+         if (clat && clon){
+          initial_position = {    
+            lat :parseFloat(clat, 10),
+            lng :parseFloat(clon, 10),
+            zoom :20
+           };
+        }
+      }
+     }      
      
     last_location = get_cookie("location");
     
@@ -561,17 +561,17 @@
     };
     
     if (IS_OWNER) {
-    	$.getJSON(SAVE_URL, data, function(saveResponse){		      
-	      if (saveResponse.stat == "ok"){
-	        form.html("Location Saved");
-	        getInfo();
-	      } else {
-	        form.html("Error: " + saveResponse.message);
-	      }
-	    });
-  	} else {
-		  getInfo();
-  	}
+      $.getJSON(SAVE_URL, data, function(saveResponse){          
+        if (saveResponse.stat == "ok"){
+          form.html("Location Saved");
+          getInfo();
+        } else {
+          form.html("Error: " + saveResponse.message);
+        }
+      });
+    } else {
+      getInfo();
+    }
   }
 
   // gets the photo title, description, and tags       
@@ -594,8 +594,8 @@
     $.getJSON(SAVE_URL, data, function(infoResponse){
       if (infoResponse.stat == "ok"){
         THE_TAGS = infoResponse.photo.tags.tag;
-     	  THE_DESCRIPTION = infoResponse.photo.description._content;    	
-     	  THE_TITLE = infoResponse.photo.title._content;
+         THE_DESCRIPTION = infoResponse.photo.description._content;      
+         THE_TITLE = infoResponse.photo.title._content;
         removeTags(THE_TAGS);
       } else {
         form.html("Error getting data: " + infoResponse.message);
@@ -607,53 +607,53 @@
     
     log("Remove Tags");
         
-		var removeArray = [];
-		
-		if (IS_OWNER) {
-			$.each(tagArray, function() {
-			  if (this.raw.indexOf("geo:")>-1) {
-			    removeArray.push(this.id);  
-			  }
-			});
-		} else {
-			$.each(tagArray, function() {
-			  if (this.raw.indexOf("geo:")>-1 && this.author==USER_NSID){
-			    removeArray.push(this.id);
-			  }
-			});
-		}
- 			
- 		while (removeArray.length > 0) { 
-			var removeMe=removeArray.shift();
-	  
-	    if (removeArray.length == 0) { 
-	      LAST_TAG_REMOVED = true;
-	    }
-	      
-	    data = {
-	      format: "json",
-	      clientType: "yui-3-flickrapi-module",
-	      api_key: API_KEY,
-	      auth_hash: AUTH_HASH,
-	      auth_token: AUTH_TOKEN,
-		    secret: API_SECRET,
-	      photo_id: PHOTO_ID,
-	   	  tag_id: removeMe,
-	      method: "flickr.photos.removeTag",
-	      cachebust: Number(new Date())  
-	    };
-	    
-		  $.getJSON(SAVE_URL, data, function(removeResponse){
-		    if (removeResponse.stat == "ok" && LAST_TAG_REMOVED) { 
-			    saveGeotags(); 
-			  }
-		  });
-		}
-		if (!LAST_TAG_REMOVED) {
-		  saveGeotags(); 
-		  // if there were no tags to remove
-		}
- 	}
+    var removeArray = [];
+    
+    if (IS_OWNER) {
+      $.each(tagArray, function() {
+        if (this.raw.indexOf("geo:")>-1) {
+          removeArray.push(this.id);  
+        }
+      });
+    } else {
+      $.each(tagArray, function() {
+        if (this.raw.indexOf("geo:")>-1 && this.author==USER_NSID){
+          removeArray.push(this.id);
+        }
+      });
+    }
+       
+     while (removeArray.length > 0) { 
+      var removeMe=removeArray.shift();
+    
+      if (removeArray.length == 0) { 
+        LAST_TAG_REMOVED = true;
+      }
+        
+      data = {
+        format: "json",
+        clientType: "yui-3-flickrapi-module",
+        api_key: API_KEY,
+        auth_hash: AUTH_HASH,
+        auth_token: AUTH_TOKEN,
+        secret: API_SECRET,
+        photo_id: PHOTO_ID,
+         tag_id: removeMe,
+        method: "flickr.photos.removeTag",
+        cachebust: Number(new Date())  
+      };
+      
+      $.getJSON(SAVE_URL, data, function(removeResponse){
+        if (removeResponse.stat == "ok" && LAST_TAG_REMOVED) { 
+          saveGeotags(); 
+        }
+      });
+    }
+    if (!LAST_TAG_REMOVED) {
+      saveGeotags(); 
+      // if there were no tags to remove
+    }
+   }
 
   // saves the geotags
   function saveGeotags() {
@@ -687,13 +687,13 @@
         form.html("Geotag error: " + tagResponse.message);
         if (!IS_OWNER) {
           theTag = "http://maps.google.com/maps?q=loc:" + theTag;
-        	addComment(theTag);
+          addComment(theTag);
         }
       }
     });
   }
 
-	// puts the loc.alize.us link in a comment
+  // puts the loc.alize.us link in a comment
   function addComment(theTag) {
     
     log("Add Comment");
@@ -701,22 +701,22 @@
     var theComment = "See where this picture was taken.";
     
     if (theTag.indexOf("google.com")>0){
-    	theTag = theTag.replace("geo:lat=","");
-    	theTag = theTag.replace("geo:lon=",",");
-		  theTag = theTag.replace(" geotagged","&z=18");
-		  theTag = theTag.replace(/ /g,"");
-		  theComment = theComment + ": " + theTag + " <a href='" + BOOKMARK_URL + "'>[?]</a>";
-		} else {
-		  theComment = "<a href='http://loc.alize.us/#/flickr:" + PHOTO_ID + "'>" + theComment + ".</a> <a href='" + BOOKMARK_URL + "'>[?]</a>";
-		}
-		
-   	var data = {
+      theTag = theTag.replace("geo:lat=","");
+      theTag = theTag.replace("geo:lon=",",");
+      theTag = theTag.replace(" geotagged","&z=18");
+      theTag = theTag.replace(/ /g,"");
+      theComment = theComment + ": " + theTag + " <a href='" + BOOKMARK_URL + "'>[?]</a>";
+    } else {
+      theComment = "<a href='http://loc.alize.us/#/flickr:" + PHOTO_ID + "'>" + theComment + ".</a> <a href='" + BOOKMARK_URL + "'>[?]</a>";
+    }
+    
+     var data = {
       format: "json",
       clientType: "yui-3-flickrapi-module",
       api_key: API_KEY,
       auth_hash: AUTH_HASH,
       auth_token: AUTH_TOKEN,
-	    secret: API_SECRET,
+      secret: API_SECRET,
       photo_id: PHOTO_ID,
       comment_text: theComment,
       method: "flickr.photos.comments.addComment",
@@ -742,13 +742,13 @@
     var theDescription = expungeLocalize(THE_DESCRIPTION);
     theDescription = theDescription + "\r\r<a href='http://loc.alize.us/#/flickr:" + PHOTO_ID + "'>See where this picture was taken.</a> <a href='" + BOOKMARK_URL + "'>[?]</a>";
     
-   	var data = {
+     var data = {
       format: "json",
       clientType: "yui-3-flickrapi-module",
       api_key: API_KEY,
       auth_hash: AUTH_HASH,
       auth_token: AUTH_TOKEN,
-	    secret: API_SECRET,
+      secret: API_SECRET,
       photo_id: PHOTO_ID,
       description: theDescription,
       title:THE_TITLE,
@@ -772,18 +772,18 @@
     
     log("Expunge Localize");
     
-		var regEx = new RegExp("<a.*/a>", "gi");
-		var theLinks = theString.match(regEx);
-		if (theLinks) {
-  		for (var i=0;i<theLinks.length;i++){
-  			if (theLinks[i].indexOf("geolicker")>0) {
-  			  theString = theString.replace(theLinks[i],"");
-  			}
-  		}  		  
-		}
-		return theString;
-	}
-   	 
+    var regEx = new RegExp("<a.*/a>", "gi");
+    var theLinks = theString.match(regEx);
+    if (theLinks) {
+      for (var i=0;i<theLinks.length;i++){
+        if (theLinks[i].indexOf("geolicker")>0) {
+          theString = theString.replace(theLinks[i],"");
+        }
+      }        
+    }
+    return theString;
+  }
+      
   function find(address){
     
     log("Find Address", address);
@@ -865,7 +865,7 @@
     
     log("Hide");
     
-  	window.location.reload();
+    window.location.reload();
   }
   
   initialize();
