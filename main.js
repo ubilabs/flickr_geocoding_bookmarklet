@@ -143,7 +143,20 @@
     AUTH_HASH = get_secrets("auth_hash");
     PHOTO_ID = get_secrets("photo_id");
     USER_NSID = get_secrets("nsid");
-    IS_OWNER = /isOwner:\s*true/.test(script);  
+    OWNER_NSID = get_secrets("owner_nsid");
+    IS_OWNER = USER_NSID == OWNER_NSID;
+    
+    log("Flickr params:", {
+      MAGIC_COOKIE: MAGIC_COOKIE,
+      API_SECRET: API_SECRET,
+      API_KEY: API_KEY,
+      AUTH_TOKEN: AUTH_TOKEN,
+      AUTH_HASH: AUTH_HASH,
+      PHOTO_ID: PHOTO_ID,
+      USER_NSID: USER_NSID,
+      OWNER_NSID: OWNER_NSID,
+      IS_OWNER: IS_OWNER
+    });
   }
   
   function jquery_loaded(){
