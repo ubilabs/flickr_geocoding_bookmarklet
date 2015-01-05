@@ -474,7 +474,7 @@
     if ($save.hasClass("DisabledButt")){ return; }
     
     $save.removeClass("Butt").addClass("DisabledButt");
-    var data = {}, form; 
+    var data = {};
     
     $spinner.show();
 
@@ -496,10 +496,10 @@
     if (IS_OWNER) {
       $.getJSON(SAVE_URL, data, function(saveResponse){          
         if (saveResponse.stat == "ok"){
-          form.html("Location Saved");
+          $submit_form.html("Location Saved");
           getInfo();
         } else {
-          form.html("Error: " + saveResponse.message);
+          $submit_form.html("Error: " + saveResponse.message);
         }
       });
     } else {
@@ -531,7 +531,7 @@
          THE_TITLE = infoResponse.photo.title._content;
         removeTags(THE_TAGS);
       } else {
-        form.html("Error getting data: " + infoResponse.message);
+        $submit_form.html("Error getting data: " + infoResponse.message);
       }
     });
   }
@@ -609,14 +609,14 @@
     
     $.getJSON(SAVE_URL, data, function(tagResponse){
       if (tagResponse.stat == "ok"){
-        form.html("Geotags saved.");
+        $submit_form.html("Geotags saved");
         if (IS_OWNER){
           setDescription();
         } else {
           addComment(theTag);
         }
       } else {
-        form.html("Geotag error: " + tagResponse.message);
+        $submit_form.html("Geotag error: " + tagResponse.message);
         if (!IS_OWNER) {
           theTag = "http://maps.google.com/maps?q=loc:" + theTag;
           addComment(theTag);
@@ -657,11 +657,11 @@
     
     $.getJSON(SAVE_URL, data, function(comResponse){
       if (comResponse.stat == "ok"){
-        form.html("Comment saved");
+        $submit_form.html("Comment saved");
         window.location.reload();  
         // closes the map window after saving all locations and tags
       } else {
-        form.html("Comment error: " + comResponse.message);
+        $submit_form.html("Comment error: " + comResponse.message);
       }
     });
   }     
@@ -690,10 +690,10 @@
     $.getJSON(SAVE_URL, data, function(localResponse){
 
       if (localResponse.stat == "ok"){
-        form.html("Saved");
+        $submit_form.html("Saved");
         window.location.reload();  // closes the map window after saving all locations and tags
       } else {
-        form.html("Loc.alize.us error: " + localResponse.message);
+        $submit_form.html("Loc.alize.us error: " + localResponse.message);
       }
     });
   }     
