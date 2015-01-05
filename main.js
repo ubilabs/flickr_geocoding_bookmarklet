@@ -209,7 +209,7 @@
   
   function draw_panel(html){
     
-    var $close, $maximize;
+    var $close;
     
     $background = $("<div>", {
       id: 'flickr_bookmarklet_background',
@@ -224,26 +224,6 @@
     $close = $container.find(".close");
     
     $close.click(hide);
-    $maximize = $("<span class='maximize'>maximize</span>");
-    
-    $close.before($maximize);
-    
-    var maximized = false;
-    $maximize.toggle(function(){
-      var center = map.getCenter();
-      $container.addClass("maximized");
-      $maximize.html("restore");
-      $map.height($(window).height() -140);
-      google.maps.event.trigger(map, 'resize');
-      map.setCenter(center);
-    }, function(){
-      var center = map.getCenter();
-      $maximize.html("maximize");
-      $container.removeClass("maximized");
-      $map.height(400);
-      google.maps.event.trigger(map, 'resize');
-      map.setCenter(center);
-    });
     
     $container.find(".breadcrumb h3").html(
       'Location for "'+
