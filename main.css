@@ -1,4 +1,4 @@
-#flickr_bookmarklet{font-size:12px;position:fixed;text-align:left;width:1000px;height:500px;z-index:20003;display:block;left:50%;margin-left:-505px;margin-top:-255px;top:50%;background-color:#FFF;padding:10px;-moz-box-shadow:0 0 8px rgba(0,0,0,0.5);-moz-border-radius:4px 4px 4px 4px;}
+#flickr_bookmarklet{font-size:12px;position:fixed;text-align:left;width:1000px;height:550px;z-index:20003;display:block;left:50%;margin-left:-505px;margin-top:-255px;top:50%;background-color:#FFF;padding:10px;-moz-box-shadow:0 0 8px rgba(0,0,0,0.5);-moz-border-radius:4px 4px 4px 4px;}
 #flickr_bookmarklet .foot,#flickr_bookmarklet .mode-title{display:none;}
 #flickr_bookmarklet .map{width:1000px;height:400px;}
 #flickr_bookmarklet .location-overlay-wrapper{margin:0 0 1em 0;}
