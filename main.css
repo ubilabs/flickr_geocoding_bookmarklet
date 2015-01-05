@@ -2,14 +2,14 @@
 #flickr_bookmarklet .foot,#flickr_bookmarklet .mode-title{display:none;}
 #flickr_bookmarklet .map{width:1000px;height:400px;}
 #flickr_bookmarklet .location-overlay-wrapper{margin:0 0 1em 0;}
-#flickr_bookmarklet .close{background-image:url("http://l.yimg.com/g/images/close_x_sprite.png");border:0 none;cursor:pointer;height:16px;margin:0;padding:0;position:absolute;right:10px;top:10px;width:16px;}
+#flickr_bookmarklet .close{background-image:url("https://s.yimg.com/g/images/close_x_sprite.png");border:0 none;cursor:pointer;height:16px;margin:0;padding:0;position:absolute;right:10px;top:10px;width:16px;}
 #flickr_bookmarklet .maximize{color:#666;cursor:pointer;position:absolute;right:36px;text-align:right;text-decoration:underline;top:10px;width:100px;}
 #flickr_bookmarklet.maximized{width:auto;height:auto;top:10px;left:10px;right:10px;bottom:10px;margin:0;}
 #flickr_bookmarklet.maximized .map{width:auto;margin:0 -10px;}
 #flickr_bookmarklet_background{background-color:#000;height:100%;left:0;opacity:.35;position:fixed;top:0;width:100%;z-index:20002;cursor:pointer;filter:alpha(opacity=35);}
 #flickr_bookmarklet form input{margin:0 .5em 1em .5em;width:20em;}
 #flickr_bookmarklet .DisabledButt,#flickr_bookmarklet .Butt{margin-right:5px;}
-#flickr_bookmarklet div.spinner{background:url("http://l.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 0 5px #FFF;display:inline-block;height:25px;margin:0 0 -9px 1em;width:24px;}
+#flickr_bookmarklet div.spinner{background:url("https://s.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 0 5px #FFF;display:inline-block;height:25px;margin:0 0 -9px 1em;width:24px;}
 #flickr_bookmarklet #submit_form button{display:none;}
 #flickr_bookmarklet #submit_form{margin-left:1em;}
 #flickr_bookmarklet #submit_form,#flickr_bookmarklet #submit_form fieldset,#flickr_bookmarklet #submit_form fieldset div div{display:inline-block;}
