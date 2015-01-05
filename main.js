@@ -17,6 +17,7 @@
     API_KEY,
     IS_OWNER,
     USER_NSID,
+    OWNER_NSID,
     PHOTO_ID,
     CSRF,
     MARKER_SRC = BASE_URL + "/arrow.png",
@@ -128,7 +129,10 @@
       var url_parts = $("meta[name='og:url']").attr("content").split('/', 6);
       PHOTO_ID = url_parts[5];
 
-      IS_OWNER = true;
+      USER_NSID = window.auth.user.nsid;
+      OWNER_NSID = $('.attribution-icon').attr('data-person-nsid');
+
+      IS_OWNER = (USER_NSID == OWNER_NSID);
 
       return true;
 
