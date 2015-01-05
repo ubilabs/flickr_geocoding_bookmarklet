@@ -257,6 +257,14 @@
   function getQueryVariable(variable, string) {
     
     var vars = string.split("&");
+    if (vars[0] != undefined) {
+      var first_var_parts = vars[0].split('?');
+      var first_var_parts_count = first_var_parts.length;
+      if (first_var_parts_count > 1) {
+        vars[0] = first_var_parts[first_var_parts_count - 1];
+      }
+    }
+
     for (var i=0; i<vars.length; i++) {
       var pair = vars[i].split("=");
       if (pair[0] == variable) {
@@ -269,45 +277,22 @@
   function get_initial_position(){
     log("Get Initial Position");
     
-    var src, match, last_location, parts = [];    
-    src = $("#photo-story-map-zoom-street").attr("src");
-    if (!src || src.indexOf("&clat")<1) {
-      src = $("#photo-story-map-zoom-street").attr("data-defer-src");
-    }
-    
-    if (src && getQueryVariable("clat", src)){
+    var map_url, match, last_location, parts = [];
+    map_url = $(".static-maps").attr("href");
+    if (map_url && getQueryVariable("fLat", map_url)){
       initial_position = {    
-        lat :parseFloat(getQueryVariable("clat", src), 10),
-        lng :parseFloat(getQueryVariable("clon", src), 10),
-        zoom :20
-       };
-    } else {   
-        // checks to see if the location is stored in geotags
-        var theLinksText = $("#sidecar a").text();
-        if (theLinksText.indexOf("geo:lat")>0) {
-         tagTrash = theLinksText.split("geo:lat=");
-         var clat=tagTrash[1].split("[")[0];
-        if (theLinksText.indexOf("geo:lon")>0) {
-          tagTrash = theLinksText.split("geo:lon=");
-           var clon=tagTrash[1].split("[")[0];
-        }
-         if (clat && clon){
-          initial_position = {    
-            lat :parseFloat(clat, 10),
-            lng :parseFloat(clon, 10),
-            zoom :20
-           };
-        }
-      }
-     }      
-     
+        lat  : parseFloat(getQueryVariable("fLat", map_url), 10),
+        lng  : parseFloat(getQueryVariable("fLon", map_url), 10),
+        zoom : 20
+      };
+    }
     last_location = get_cookie("location");
     
     if (last_location) {
       parts = last_location.split(",");
     } 
     
-    if (initial_position){
+    if (initial_position) {
       lat = initial_position.lat;
       lng = initial_position.lng;
       zoom = initial_position.zoom;
@@ -319,10 +304,8 @@
     
     map_type = parts[3];
     
-    address = $("#photoGeolocation-storylink").html() || 
-      get_cookie("address") || 
-      "Enter place name or address.";
-      address = address.replace(/&nbsp;/g," ").replace(/^\s+/, "");
+    address = get_cookie("address") || "Enter place name or address.";
+    address = address.replace(/&nbsp;/g," ").replace(/^\s+/, "");
   }
   
   function init_map(){
