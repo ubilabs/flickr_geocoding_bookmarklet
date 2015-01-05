@@ -10,7 +10,6 @@
     BASE_URL = "https://cdn.rawgit.com/ubilabs/flickr_geocoding_bookmarklet/master/",
     JQUERY_SRC = "https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
     GMAPS_API = "https://maps.google.com/maps/api/js?sensor=false&libraries=places&callback=?",
-    CONFIRM_URL = "https://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
     SAVE_URL = "https://www.flickr.com/services/rest/?jsoncallback=?",
     POST_URL = "https://www.ﬂickr.com/services/rest/",
     BOOKMARK_URL = "https://www.flickr.com/groups/geotagging/discuss/72157594165549916/",
@@ -422,7 +421,7 @@
       infowindow.close();
       info_hidden = true;
     };
-    check_position();
+
     google.maps.event.addListener(marker, 'click', function(){
       if (info_hidden){
         show_info();
@@ -443,7 +442,7 @@
     });    
   }
   
-  function position(latLng, skip_server){
+  function position(latLng){
     
     log("Update position");
     
@@ -463,43 +462,6 @@
     ];
     
     set_cookie("location", info.join(","));
-    
-    if (!skip_server){
-      check_position();
-    }
-  }
-  
-  function check_position(){
-    
-    log("Check position");
-    
-    var data, edit_mode;
-    
-    edit_mode = initial_position ? "edit" : "add";
-    
-    data = {
-      accuracy: map.getZoom(),
-      center_map: true,
-      edit_mode: "0," + edit_mode,
-      latitude: lat,
-      longitude: lng,
-      magic_cookie: MAGIC_COOKIE,
-      viewgeo: 0
-    };
-    
-    $spinner.show();
-    $submit_form.html("");
-    
-    $.post(CONFIRM_URL, data, function(html){
-     
-      $submit_form.html(html);
-      
-      $submit_form.find("fieldset div div").html("Location:");
-      $submit_form.find("[name=save_perm_viewgeo]").parent().parent().hide();
-      
-      $spinner.hide();     
-      $save.removeClass("DisabledButt").addClass("Butt");
-    });
   }
   
   function save_position(){
@@ -514,16 +476,7 @@
     $save.removeClass("Butt").addClass("DisabledButt");
     var data = {}, form; 
     
-    form = $submit_form.find(".flickrmap_locationconfirm");
-    $.each(form.serializeArray(), function(){
-      data[this.name] = this.value;
-    });
-    
     $spinner.show();
-    
-    $.post(CONFIRM_URL, data, function(confirmResponse){
-                  
-    }, "json");
 
     data = {
       format: "json",
@@ -655,7 +608,6 @@
     };
     
     $.getJSON(SAVE_URL, data, function(tagResponse){
-     var form = $submit_form.find(".flickrmap_locationconfirm");
       if (tagResponse.stat == "ok"){
         form.html("Geotags saved.");
         if (IS_OWNER){
@@ -704,7 +656,6 @@
     };
     
     $.getJSON(SAVE_URL, data, function(comResponse){
-      var form = $submit_form.find(".flickrmap_locationconfirm");
       if (comResponse.stat == "ok"){
         form.html("Comment saved");
         window.location.reload();  
@@ -737,7 +688,6 @@
     };
     
     $.getJSON(SAVE_URL, data, function(localResponse){
-      var form = $submit_form.find(".flickrmap_locationconfirm");
 
       if (localResponse.stat == "ok"){
         form.html("Saved");
@@ -821,7 +771,7 @@
         initial_position.lat, 
         initial_position.lng
       );
-      position(latLng, true);
+      position(latLng);
       map.setCenter(latLng);
       map.setZoom(initial_position.zoom);
     } else {
