@@ -227,7 +227,7 @@
     
     $container.find(".breadcrumb h3").html(
       'Location for "'+
-      $("meta[name='title']").attr("content") +
+      $("meta[name='og:title']").attr("content") +
       '":'
     );
 
@@ -258,9 +258,9 @@
     $spinner = $("<div class='spinner'/>");
     $save = $("<button class='Butt'>SAVE LOCATION</button>");
     
-      $cancel = $("<button class='CancelButt'>CANCEL</button>");
-      $container.append($save);
-      $save.click(save_position);
+    $cancel = $("<button class='CancelButt'>CANCEL</button>");
+    $container.append($save);
+    $save.click(save_position);
     
     $link = $("<a href='https://www.flickr.com/groups/geotagging/discuss/72157594165549916/' target='_blank' class='link'>Feedback</a>");
     
