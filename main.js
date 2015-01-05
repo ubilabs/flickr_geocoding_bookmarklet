@@ -7,7 +7,7 @@
   
   var $,
     // BASE_URL = "http://192.168.1.208:8000/",
-    BASE_URL = "https://raw.github.com/ubilabs/flickr_geocoding_bookmarklet/master/",
+    BASE_URL = "https://cdn.rawgit.com/ubilabs/flickr_geocoding_bookmarklet/master/",
     JQUERY_SRC = "https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
     GMAPS_API = "https://maps.google.com/maps/api/js?sensor=false&libraries=places&callback=?",
     CONFIRM_URL = "https://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
