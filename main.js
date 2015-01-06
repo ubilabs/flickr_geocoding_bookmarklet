@@ -7,22 +7,19 @@
   
   var $,
     // BASE_URL = "http://192.168.1.208:8000/",
-    BASE_URL = "https://raw.github.com/ubilabs/flickr_geocoding_bookmarklet/master/",
-    JQUERY_SRC = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
-    GMAPS_API = "http://maps.google.com/maps/api/js?sensor=false&libraries=places&callback=?",
-    CONFIRM_URL = "http://www.flickr.com/flickrmap_locationconfirm_fragment.gne",
-    SAVE_URL = "http://www.flickr.com/services/rest/?jsoncallback=?",
-    POST_URL = "http://www.ﬂickr.com/services/rest/",
-    BOOKMARK_URL = "http://www.flickr.com/groups/geotagging/discuss/72157594165549916/",
-    STYLES = '#flickr_bookmarklet{font-size:12px;position:fixed;text-align:left;width:1000px;height:500px;z-index:20003;display:block;left:50%;margin-left:-505px;margin-top:-255px;top:50%;background-color:#FFF;padding:10px;-moz-box-shadow:0 0 8px rgba(0,0,0,0.5);-moz-border-radius:4px 4px 4px 4px;}#flickr_bookmarklet .foot,#flickr_bookmarklet .mode-title{display:none;}#flickr_bookmarklet .map{width:1000px;height:400px;}#flickr_bookmarklet .location-overlay-wrapper{margin:0 0 1em 0;}#flickr_bookmarklet .close{background-image:url("http://l.yimg.com/g/images/close_x_sprite.png");border:0 none;cursor:pointer;height:16px;margin:0;padding:0;position:absolute;right:10px;top:10px;width:16px;}#flickr_bookmarklet .maximize{color:#666;cursor:pointer;position:absolute;right:36px;text-align:right;text-decoration:underline;top:10px;width:100px;}#flickr_bookmarklet.maximized{width:auto;height:auto;top:10px;left:10px;right:10px;bottom:10px;margin:0;}#flickr_bookmarklet.maximized .map{width:auto;margin:0 -10px;}#flickr_bookmarklet_background{background-color:#000;height:100%;left:0;opacity:.35;position:fixed;top:0;width:100%;z-index:20002;cursor:pointer;filter:alpha(opacity=35);}#flickr_bookmarklet form input{margin:0 .5em 1em .5em;width:20em;}#flickr_bookmarklet .DisabledButt,#flickr_bookmarklet .Butt{margin-right:5px;}#flickr_bookmarklet div.spinner{background:url("http://l.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 0 5px #FFF;display:inline-block;height:25px;margin:0 0 -9px 1em;width:24px;}#flickr_bookmarklet #submit_form button{display:none;}#flickr_bookmarklet #submit_form{margin-left:1em;}#flickr_bookmarklet #submit_form,#flickr_bookmarklet #submit_form fieldset,#flickr_bookmarklet #submit_form fieldset div div{display:inline-block;}#flickr_bookmarklet.no_location{width:300px;height:70px;margin-left:-205px;margin-top:-35px;text-align:center;}#flickr_bookmarklet.no_location div{margin:.5em 0 1em 0;}#flickr_bookmarklet .link{float:right;}#flickr_bookmarklet .edit_instruction,#flickr_bookmarklet #submit_form button{display:none;}.pac-container{z-index:20004 !important;}.pac-container:after{display:none;}',
-    MAGIC_COOKIE,
+    BASE_URL = "https://cdn.rawgit.com/ubilabs/flickr_geocoding_bookmarklet/master/",
+    JQUERY_SRC = "https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
+    GMAPS_API = "https://maps.google.com/maps/api/js?sensor=false&libraries=places&callback=?",
+    SAVE_URL = "https://www.flickr.com/services/rest/?jsoncallback=?",
+    POST_URL = "https://www.ﬂickr.com/services/rest/",
+    BOOKMARK_URL = "https://www.flickr.com/groups/geotagging/discuss/72157594165549916/",
+    STYLES = '#flickr_bookmarklet{font-size:12px;position:fixed;text-align:left;width:1000px;height:550px;z-index:20003;display:block;left:50%;margin-left:-505px;margin-top:-255px;top:50%;background-color:#FFF;padding:10px;-moz-box-shadow:0 0 8px rgba(0,0,0,0.5);-moz-border-radius:4px 4px 4px 4px;}#flickr_bookmarklet .foot,#flickr_bookmarklet .mode-title{display:none;}#flickr_bookmarklet .map{width:1000px;height:400px;}#flickr_bookmarklet .location-overlay-wrapper{margin:0 0 1em 0;}#flickr_bookmarklet .close{background-image:url("https://s.yimg.com/g/images/close_x_sprite.png");border:0 none;cursor:pointer;height:16px;margin:0;padding:0;position:absolute;right:10px;top:10px;width:16px;}#flickr_bookmarklet .maximize{color:#666;cursor:pointer;position:absolute;right:36px;text-align:right;text-decoration:underline;top:10px;width:100px;}#flickr_bookmarklet.maximized{width:auto;height:auto;top:10px;left:10px;right:10px;bottom:10px;margin:0;}#flickr_bookmarklet.maximized .map{width:auto;margin:0 -10px;}#flickr_bookmarklet_background{background-color:#000;height:100%;left:0;opacity:.35;position:fixed;top:0;width:100%;z-index:20002;cursor:pointer;filter:alpha(opacity=35);}#flickr_bookmarklet form input{margin:0 .5em 1em .5em;width:20em;}#flickr_bookmarklet .DisabledButt,#flickr_bookmarklet .Butt{margin-right:5px;}#flickr_bookmarklet div.spinner{background:url("https://s.yimg.com/g/images/progress/balls-24x12-white.gif") no-repeat scroll 0 5px #FFF;display:inline-block;height:25px;margin:0 0 -9px 1em;width:24px;}#flickr_bookmarklet #submit_form button{display:none;}#flickr_bookmarklet #submit_form{margin-left:1em;}#flickr_bookmarklet #submit_form,#flickr_bookmarklet #submit_form fieldset,#flickr_bookmarklet #submit_form fieldset div div{display:inline-block;}#flickr_bookmarklet.no_location{width:300px;height:70px;margin-left:-205px;margin-top:-35px;text-align:center;}#flickr_bookmarklet.no_location div{margin:.5em 0 1em 0;}#flickr_bookmarklet .link{float:right;}#flickr_bookmarklet .edit_instruction,#flickr_bookmarklet #submit_form button{display:none;}.pac-container{z-index:20004 !important;}.pac-container:after{display:none;}',
     API_KEY,
-    API_SECRET,
-    AUTH_TOKEN,
-    AUTH_HASH,
     IS_OWNER,
     USER_NSID,
+    OWNER_NSID,
     PHOTO_ID,
+    CSRF,
     MARKER_SRC = BASE_URL + "/arrow.png",
     PANEL_SRC = "/photo_geopanel_fragment.gne",
     map,
@@ -81,7 +78,7 @@
           "Do you want to move over to Flickr?"
         );
         if (goto_flickr){
-          document.location.href = "http://flickr.com/";
+          document.location.href = "https://flickr.com/";
         }
       }
       return;
@@ -124,39 +121,24 @@
   
   function get_secrets(){
     log("Get Secrets");
-    var script, match, get_secrets;
-    
-    script = $("script").not("[src]").last().html();
+    try {
+      API_KEY = window.YUI_config.flickr.api.site_key;
 
-    get_secrets = function(key){     
-      var regex, match;
-      regex = new RegExp('"' + key + '":"([^"]*)"', "i");
-      match = script.match(regex);
-      return match && match[1];
-    };
-    
-    MAGIC_COOKIE = $("input[name=magic_cookie]").val();
-    
-    API_SECRET = get_secrets("secret");
-    API_KEY = get_secrets("api_key");
-    AUTH_TOKEN = get_secrets("auth_token");
-    AUTH_HASH = get_secrets("auth_hash");
-    PHOTO_ID = get_secrets("photo_id");
-    USER_NSID = get_secrets("nsid");
-    OWNER_NSID = get_secrets("owner_nsid");
-    IS_OWNER = USER_NSID == OWNER_NSID;
-    
-    log("Flickr params:", {
-      MAGIC_COOKIE: MAGIC_COOKIE,
-      API_SECRET: API_SECRET,
-      API_KEY: API_KEY,
-      AUTH_TOKEN: AUTH_TOKEN,
-      AUTH_HASH: AUTH_HASH,
-      PHOTO_ID: PHOTO_ID,
-      USER_NSID: USER_NSID,
-      OWNER_NSID: OWNER_NSID,
-      IS_OWNER: IS_OWNER
-    });
+      CSRF = window.auth.csrf;
+
+      var url_parts = $("meta[name='og:url']").attr("content").split('/', 6);
+      PHOTO_ID = url_parts[5];
+
+      USER_NSID = window.auth.user.nsid;
+      OWNER_NSID = $('.attribution-icon').attr('data-person-nsid');
+
+      IS_OWNER = (USER_NSID == OWNER_NSID);
+
+      return true;
+
+    } catch (ex) {
+      return false;
+    }
   }
   
   function jquery_loaded(){
@@ -165,7 +147,11 @@
     $ = jQuery;
     $.noConflict();
     load_styles();
-    get_secrets();
+    var loaded_secrets = get_secrets();
+    if (!loaded_secrets) {
+      alert('Sorry, could not correctly fetch your user info');
+      return;
+    }
     
     $.get(PANEL_SRC, function(html){
       log("Get panel");
@@ -209,7 +195,7 @@
   
   function draw_panel(html){
     
-    var $close, $maximize;
+    var $close;
     
     $background = $("<div>", {
       id: 'flickr_bookmarklet_background',
@@ -224,30 +210,10 @@
     $close = $container.find(".close");
     
     $close.click(hide);
-    $maximize = $("<span class='maximize'>maximize</span>");
-    
-    $close.before($maximize);
-    
-    var maximized = false;
-    $maximize.toggle(function(){
-      var center = map.getCenter();
-      $container.addClass("maximized");
-      $maximize.html("restore");
-      $map.height($(window).height() -140);
-      google.maps.event.trigger(map, 'resize');
-      map.setCenter(center);
-    }, function(){
-      var center = map.getCenter();
-      $maximize.html("maximize");
-      $container.removeClass("maximized");
-      $map.height(400);
-      google.maps.event.trigger(map, 'resize');
-      map.setCenter(center);
-    });
     
     $container.find(".breadcrumb h3").html(
       'Location for "'+
-      $("meta[name='title']").attr("content") +
+      $("meta[name='og:title']").attr("content") +
       '":'
     );
 
@@ -278,11 +244,11 @@
     $spinner = $("<div class='spinner'/>");
     $save = $("<button class='Butt'>SAVE LOCATION</button>");
     
-      $cancel = $("<button class='CancelButt'>CANCEL</button>");
-      $container.append($save);
-      $save.click(save_position);
+    $cancel = $("<button class='CancelButt'>CANCEL</button>");
+    $container.append($save);
+    $save.click(save_position);
     
-    $link = $("<a href='http://www.flickr.com/groups/geotagging/discuss/72157594165549916/' target='_blank' class='link'>Feedback</a>");
+    $link = $("<a href='https://www.flickr.com/groups/geotagging/discuss/72157594165549916/' target='_blank' class='link'>Feedback</a>");
     
     $submit_form = $("<div>", {id: "submit_form"});
     $container.append($cancel).append($spinner).append($submit_form).append($link);
@@ -295,6 +261,14 @@
   function getQueryVariable(variable, string) {
     
     var vars = string.split("&");
+    if (vars[0] != undefined) {
+      var first_var_parts = vars[0].split('?');
+      var first_var_parts_count = first_var_parts.length;
+      if (first_var_parts_count > 1) {
+        vars[0] = first_var_parts[first_var_parts_count - 1];
+      }
+    }
+
     for (var i=0; i<vars.length; i++) {
       var pair = vars[i].split("=");
       if (pair[0] == variable) {
@@ -307,45 +281,22 @@
   function get_initial_position(){
     log("Get Initial Position");
     
-    var src, match, last_location, parts = [];    
-    src = $("#photo-story-map-zoom-street").attr("src");
-    if (!src || src.indexOf("&clat")<1) {
-      src = $("#photo-story-map-zoom-street").attr("data-defer-src");
-    }
-    
-    if (src && getQueryVariable("clat", src)){
+    var map_url, match, last_location, parts = [];
+    map_url = $(".static-maps").attr("href");
+    if (map_url && getQueryVariable("fLat", map_url)){
       initial_position = {    
-        lat :parseFloat(getQueryVariable("clat", src), 10),
-        lng :parseFloat(getQueryVariable("clon", src), 10),
-        zoom :20
-       };
-    } else {   
-        // checks to see if the location is stored in geotags
-        var theLinksText = $("#sidecar a").text();
-        if (theLinksText.indexOf("geo:lat")>0) {
-         tagTrash = theLinksText.split("geo:lat=");
-         var clat=tagTrash[1].split("[")[0];
-        if (theLinksText.indexOf("geo:lon")>0) {
-          tagTrash = theLinksText.split("geo:lon=");
-           var clon=tagTrash[1].split("[")[0];
-        }
-         if (clat && clon){
-          initial_position = {    
-            lat :parseFloat(clat, 10),
-            lng :parseFloat(clon, 10),
-            zoom :20
-           };
-        }
-      }
-     }      
-     
+        lat  : parseFloat(getQueryVariable("fLat", map_url), 10),
+        lng  : parseFloat(getQueryVariable("fLon", map_url), 10),
+        zoom : 20
+      };
+    }
     last_location = get_cookie("location");
     
     if (last_location) {
       parts = last_location.split(",");
     } 
     
-    if (initial_position){
+    if (initial_position) {
       lat = initial_position.lat;
       lng = initial_position.lng;
       zoom = initial_position.zoom;
@@ -357,10 +308,8 @@
     
     map_type = parts[3];
     
-    address = $("#photoGeolocation-storylink").html() || 
-      get_cookie("address") || 
-      "Enter place name or address.";
-      address = address.replace(/&nbsp;/g," ").replace(/^\s+/, "");
+    address = get_cookie("address") || "Enter place name or address.";
+    address = address.replace(/&nbsp;/g," ").replace(/^\s+/, "");
   }
   
   function init_map(){
@@ -442,7 +391,7 @@
       infowindow.close();
       info_hidden = true;
     };
-    check_position();
+
     google.maps.event.addListener(marker, 'click', function(){
       if (info_hidden){
         show_info();
@@ -463,7 +412,7 @@
     });    
   }
   
-  function position(latLng, skip_server){
+  function position(latLng){
     
     log("Update position");
     
@@ -483,43 +432,6 @@
     ];
     
     set_cookie("location", info.join(","));
-    
-    if (!skip_server){
-      check_position();
-    }
-  }
-  
-  function check_position(){
-    
-    log("Check position");
-    
-    var data, edit_mode;
-    
-    edit_mode = initial_position ? "edit" : "add";
-    
-    data = {
-      accuracy: map.getZoom(),
-      center_map: true,
-      edit_mode: "0," + edit_mode,
-      latitude: lat,
-      longitude: lng,
-      magic_cookie: MAGIC_COOKIE,
-      viewgeo: 0
-    };
-    
-    $spinner.show();
-    $submit_form.html("");
-    
-    $.post(CONFIRM_URL, data, function(html){
-     
-      $submit_form.html(html);
-      
-      $submit_form.find("fieldset div div").html("Location:");
-      $submit_form.find("[name=save_perm_viewgeo]").parent().parent().hide();
-      
-      $spinner.hide();     
-      $save.removeClass("DisabledButt").addClass("Butt");
-    });
   }
   
   function save_position(){
@@ -532,27 +444,15 @@
     if ($save.hasClass("DisabledButt")){ return; }
     
     $save.removeClass("Butt").addClass("DisabledButt");
-    var data = {}, form; 
-    
-    form = $submit_form.find(".flickrmap_locationconfirm");
-    $.each(form.serializeArray(), function(){
-      data[this.name] = this.value;
-    });
+    var data = {};
     
     $spinner.show();
-    
-    $.post(CONFIRM_URL, data, function(confirmResponse){
-                  
-    }, "json");
 
     data = {
       format: "json",
-      clientType: "yui-3-flickrapi-module",
       api_key: API_KEY,
-      auth_hash: AUTH_HASH,
-      auth_token: AUTH_TOKEN,
-      secret: API_SECRET,
       photo_id: PHOTO_ID,
+      csrf: CSRF,
       lat: lat,
       lon: lng,
       accuracy: Math.min(16, map.getZoom()),
@@ -563,10 +463,10 @@
     if (IS_OWNER) {
       $.getJSON(SAVE_URL, data, function(saveResponse){          
         if (saveResponse.stat == "ok"){
-          form.html("Location Saved");
+          $submit_form.html("Location Saved");
           getInfo();
         } else {
-          form.html("Error: " + saveResponse.message);
+          $submit_form.html("Error: " + saveResponse.message);
         }
       });
     } else {
@@ -581,11 +481,8 @@
     
     var data = {
       format: "json",
-      clientType: "yui-3-flickrapi-module",
       api_key: API_KEY,
-      auth_hash: AUTH_HASH,
-      auth_token: AUTH_TOKEN,
-      secret: API_SECRET,
+      csrf: CSRF,
       photo_id: PHOTO_ID,
       method: "flickr.photos.getInfo",
       cachebust: Number(new Date())
@@ -594,11 +491,11 @@
     $.getJSON(SAVE_URL, data, function(infoResponse){
       if (infoResponse.stat == "ok"){
         THE_TAGS = infoResponse.photo.tags.tag;
-         THE_DESCRIPTION = infoResponse.photo.description._content;      
-         THE_TITLE = infoResponse.photo.title._content;
+        THE_DESCRIPTION = infoResponse.photo.description._content;      
+        THE_TITLE = infoResponse.photo.title._content;
         removeTags(THE_TAGS);
       } else {
-        form.html("Error getting data: " + infoResponse.message);
+        $submit_form.html("Error getting data: " + infoResponse.message);
       }
     });
   }
@@ -623,7 +520,7 @@
       });
     }
        
-     while (removeArray.length > 0) { 
+    while (removeArray.length > 0) { 
       var removeMe=removeArray.shift();
     
       if (removeArray.length == 0) { 
@@ -632,13 +529,10 @@
         
       data = {
         format: "json",
-        clientType: "yui-3-flickrapi-module",
         api_key: API_KEY,
-        auth_hash: AUTH_HASH,
-        auth_token: AUTH_TOKEN,
-        secret: API_SECRET,
+        csrf: CSRF,
         photo_id: PHOTO_ID,
-         tag_id: removeMe,
+        tag_id: removeMe,
         method: "flickr.photos.removeTag",
         cachebust: Number(new Date())  
       };
@@ -653,7 +547,7 @@
       saveGeotags(); 
       // if there were no tags to remove
     }
-   }
+  }
 
   // saves the geotags
   function saveGeotags() {
@@ -663,11 +557,8 @@
     var data, theTag = "geo:lat=" + lat + " geo:lon=" + lng + " geotagged";
     data = {
       format: "json",
-      clientType: "yui-3-flickrapi-module",
       api_key: API_KEY,
-      auth_hash: AUTH_HASH,
-      auth_token: AUTH_TOKEN,
-      secret: API_SECRET,
+      csrf: CSRF,
       photo_id: PHOTO_ID,
       tags: theTag,
       method: "flickr.photos.addTags",
@@ -675,16 +566,15 @@
     };
     
     $.getJSON(SAVE_URL, data, function(tagResponse){
-     var form = $submit_form.find(".flickrmap_locationconfirm");
       if (tagResponse.stat == "ok"){
-        form.html("Geotags saved.");
+        $submit_form.html("Geotags saved");
         if (IS_OWNER){
           setDescription();
         } else {
           addComment(theTag);
         }
       } else {
-        form.html("Geotag error: " + tagResponse.message);
+        $submit_form.html("Geotag error: " + tagResponse.message);
         if (!IS_OWNER) {
           theTag = "http://maps.google.com/maps?q=loc:" + theTag;
           addComment(theTag);
@@ -712,11 +602,8 @@
     
      var data = {
       format: "json",
-      clientType: "yui-3-flickrapi-module",
       api_key: API_KEY,
-      auth_hash: AUTH_HASH,
-      auth_token: AUTH_TOKEN,
-      secret: API_SECRET,
+      csrf: CSRF,
       photo_id: PHOTO_ID,
       comment_text: theComment,
       method: "flickr.photos.comments.addComment",
@@ -724,13 +611,12 @@
     };
     
     $.getJSON(SAVE_URL, data, function(comResponse){
-      var form = $submit_form.find(".flickrmap_locationconfirm");
       if (comResponse.stat == "ok"){
-        form.html("Comment saved");
+        $submit_form.html("Comment saved");
         window.location.reload();  
         // closes the map window after saving all locations and tags
       } else {
-        form.html("Comment error: " + comResponse.message);
+        $submit_form.html("Comment error: " + comResponse.message);
       }
     });
   }     
@@ -744,11 +630,8 @@
     
      var data = {
       format: "json",
-      clientType: "yui-3-flickrapi-module",
       api_key: API_KEY,
-      auth_hash: AUTH_HASH,
-      auth_token: AUTH_TOKEN,
-      secret: API_SECRET,
+      csrf: CSRF,
       photo_id: PHOTO_ID,
       description: theDescription,
       title:THE_TITLE,
@@ -757,13 +640,12 @@
     };
     
     $.getJSON(SAVE_URL, data, function(localResponse){
-      var form = $submit_form.find(".flickrmap_locationconfirm");
 
       if (localResponse.stat == "ok"){
-        form.html("Saved");
+        $submit_form.html("Saved");
         window.location.reload();  // closes the map window after saving all locations and tags
       } else {
-        form.html("Loc.alize.us error: " + localResponse.message);
+        $submit_form.html("Loc.alize.us error: " + localResponse.message);
       }
     });
   }     
@@ -841,7 +723,7 @@
         initial_position.lat, 
         initial_position.lng
       );
-      position(latLng, true);
+      position(latLng);
       map.setCenter(latLng);
       map.setZoom(initial_position.zoom);
     } else {
